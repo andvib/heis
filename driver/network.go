@@ -10,11 +10,12 @@ type message struct{
 	message string
 }
 
-var connected = []*net.UDPConn{}
+var connected = make(map[string]*net.UDPConn)
 var Master = false
 var IP string
 var PORT = "30011"
 var LastSignal time.Time
+var MasterConn *net.UDPConn
 
 func initialize(){
 	//Retrieve local IP address
@@ -38,17 +39,17 @@ func initialize(){
 	for ; time.Since(temp) < 350*time.Millisecond && Master == false; {
 		timeout()
 	}
-	//recConn.Close()
+
 	conn := connect("")
 
 	if Master == true{
 		go alive(conn)
-		//recConn.Close()
 	}else{
 		go slave()
 		go receive(recConn)
 	}
 }
+
 
 func connect(ip string) (connection *net.UDPConn){
 	var address string
@@ -59,6 +60,7 @@ func connect(ip string) (connection *net.UDPConn){
 		address = ip + ":" + PORT
 	}
 
+	//Creates connection 
 	sendAddr, err := net.ResolveUDPAddr("udp", address)
 	conn, err2 := net.DialUDP("udp", nil, sendAddr)
 
@@ -66,20 +68,27 @@ func connect(ip string) (connection *net.UDPConn){
 		println("Kunne ikke koble til!")
 		return nil
 	}
-	
-	/*m := new(message)
-	m.from = IP
-	m.message = "c"
 
-	sendMessage(m, conn)*/
+	//Adds the new connection to the map
+	if ip == ""{
+		connected["bc"] = conn
+	}else{
+		connected[ip] = conn
+	}
+	
+	//Sends a message to the new connection that they should connect as well
+	text := "c"
+
+	sendMessage(text, conn)
 
 	return conn
 }
 
+
 func receive(conn *net.UDPConn){
 	//Receive message from network
 	received := make([]byte,1024)	
-	for ; Master == false ; {
+	for ; true ; {
 		_, _, _ = conn.ReadFromUDP(received)
 		println("Motatt: ", string(received))
 		LastSignal = time.Now()
@@ -90,15 +99,21 @@ func receive(conn *net.UDPConn){
 	//go receiveMessage(string(received))
 }
 
+
 func send(s string, conn *net.UDPConn){
 	b := []byte(s)
 	_, _ = conn.Write(b)
 }
 
-func sendMessage(m *message, conn *net.UDPConn){
+
+func sendMessage(text string, conn *net.UDPConn){
+	m := new(message)	
+	m.from = IP
+	m.message = text
 	messageString := m.from + "+" + m.message
 	send(messageString, conn)
 }
+
 
 func receiveMessage(mess string){
 	m := new(message)
@@ -110,36 +125,62 @@ func receiveMessage(mess string){
 	whatToDo(m)
 }
 
+
 func printMessage(m *message){
 	println("From: ", m.from)
 	println("Message: ", m.message)
 }
 
+
 func alive(conn *net.UDPConn){
 	for ; Master == true ; {
 		send("a", conn)
 		time.Sleep(100*time.Millisecond)
-		println("Alive")
 	}
 }
+
 
 func slave() {
 	for ; Master == false ; {
 		//timeout()
 	}
-}	
+}
+
 
 func whatToDo(m *message){
+	//Checks what to do with the new message
 	if m.message == "a"{
 		LastSignal = time.Now()
+		if connected["Master"] == nil{
+			connect(m.from)
+			MasterConn = connected[m.from]
+		}
+
 	}else if m.message == "b"{
 		println("Ny bestilling")
 	}else if m.message == "c"{
-		connect(m.from)
+		shouldConnect(m.from)
 	}
 }
 
+
+func shouldConnect(addr string){
+	// Iterate throught connected-map to check if the IP is allready connected
+
+	for key, _ := range connected{
+		if key == addr{
+			//Returns from function if the connection already exists
+			return;
+		}
+	}
+
+	connect(addr)
+}
+
+	
 func timeout(){
+	//Checks for alive signal from master
+
 	if time.Since(LastSignal) > 200*time.Millisecond {
 		//No master on the network
 		Master = true
@@ -148,24 +189,14 @@ func timeout(){
 	}
 }
 
+
 func main(){
 	initialize()
 	
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	
+
 	for ; true ; {
 		if Master == true{
 		}
 	}
-
-	
-	/*m := new(message)
-	m.from = "Data1"
-	m.message = "Heisann"*/
-	
-	//conn := connectMaster()
-	/*for ; true ; {
-		sendMessage(m, conn)
-		time.Sleep(1000*time.Millisecond)
-	}*/
 }
