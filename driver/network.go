@@ -42,6 +42,9 @@ func initialize(){
 
 	conn := connect("")
 
+	//Asks other units to connect
+	send("n:"+IP, connected["bc"])
+	
 	if Master == true{
 		go alive(conn)
 	}else{
@@ -151,6 +154,7 @@ func whatToDo(m *message){
 	//Checks what to do with the new message
 	if m.message == "a"{
 		LastSignal = time.Now()
+
 		if connected["Master"] == nil{
 			connect(m.from)
 			MasterConn = connected[m.from]
@@ -158,8 +162,13 @@ func whatToDo(m *message){
 
 	}else if m.message == "b"{
 		println("Ny bestilling")
+
 	}else if m.message == "c"{
 		shouldConnect(m.from)
+
+	}else if m.message[0] == 110{
+		ip := strings.Split(m.message, ":")
+		shouldConnect(ip[1])
 	}
 }
 
@@ -180,7 +189,6 @@ func shouldConnect(addr string){
 	
 func timeout(){
 	//Checks for alive signal from master
-
 	if time.Since(LastSignal) > 200*time.Millisecond {
 		//No master on the network
 		Master = true
