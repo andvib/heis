@@ -1,12 +1,12 @@
 package driver
 /*
-#cgo LDFLAGS: -lcomedi -lm
+#cgo LDFLAGS: simulation_elevator.a libphobos2.a -lpthread -lcomedi -lm
 #include "io.h"
 */
 import "C"
 
-func IO_init()(int){
-	return int(C.io_init())
+func IO_init(temp int)(int){
+	return int(C.io_init(C.int(temp)))
 }
 
 func IO_set_bit(channel int){

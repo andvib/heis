@@ -36,7 +36,7 @@ func ELEV_init() (int){
 	var i int
 	
 	//Init hardware
-	if IO_init() == 0 {
+	if IO_init(0) == 0 {
 		return 0
 	}
 	
