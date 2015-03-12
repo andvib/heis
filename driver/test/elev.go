@@ -144,16 +144,16 @@ func ELEV_set_floor_indicator(floor int) {
 
 func ELEV_get_button_signal(button elev_button_type, floor int) (int){
 
-	if floor >= 0 || floor < N_FLOORS {
+	if !(floor >= 0 || floor < N_FLOORS) {
 		return 0
 	}
-	if !(button == BUTTON_CALL_UP && floor == N_FLOORS -1) {
+	if button == BUTTON_CALL_UP && floor == N_FLOORS -1 {
 		return 0
 	}
-	if !(button == BUTTON_CALL_DOWN && floor == 0) {
+	if button == BUTTON_CALL_DOWN && floor == 0 {
 		return 0
 	}
-	if button == BUTTON_CALL_UP || button == BUTTON_CALL_DOWN || button == BUTTON_COMMAND {
+	if !(button == BUTTON_CALL_UP || button == BUTTON_CALL_DOWN || button == BUTTON_COMMAND) {
 		return 0
 	}
 	
