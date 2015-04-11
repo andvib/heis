@@ -14,7 +14,7 @@ import("net"
 var connected = make(map[string]*net.UDPConn)
 var Master = false
 var IP string
-var PORT = "30020"
+var PORT = "3002"
 var LastSignal time.Time
 var MasterConn *net.UDPConn
 
@@ -75,7 +75,7 @@ func alive(conn *net.UDPConn){
 func slave() {
 	for ; Master == false ; {
 	    timeout()
-		time.Sleep(50*time.Millisecond)
+		time.Sleep(100*time.Millisecond)
 	}
 }
 
@@ -88,7 +88,7 @@ func whatToDo(m *message){
 			connect(m.from)
 			MasterConn = connected[m.from]
 		}*/
-	}else if m.message == "as"{
+	}/*else if m.message == "as"{
 		//Alive-signal from slave
 		
 	}else if m.message == "b"{
@@ -98,7 +98,7 @@ func whatToDo(m *message){
 	}else if m.message[0] == 110{
 		ip := strings.Split(m.message, ":")
 		shouldConnect(ip[1])
-  }
+  	}*/
 }
 
 func shouldConnect(addr string){

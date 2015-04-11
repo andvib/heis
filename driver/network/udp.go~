@@ -42,7 +42,7 @@ func receive(conn *net.UDPConn){
   for ; true ; {
     _, _, _ = conn.ReadFromUDP(received)
     println("Motatt: ", string(received))
-	//go receiveMessage(string(received))
+	go receiveMessage(string(received))
   }
   conn.Close()
   println("Stenger mottak")
@@ -53,6 +53,7 @@ func receive(conn *net.UDPConn){
 
 
 func send(s string, conn *net.UDPConn){
+	println("sending message")
 	b := []byte(s)
 	_, _ = conn.Write(b)
 }

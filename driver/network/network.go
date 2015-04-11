@@ -75,7 +75,7 @@ func alive(conn *net.UDPConn){
 func slave() {
 	for ; Master == false ; {
 	    timeout()
-		time.Sleep(50*time.Millisecond)
+		time.Sleep(100*time.Millisecond)
 	}
 }
 
