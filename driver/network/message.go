@@ -21,11 +21,11 @@ func sendMessage(text string, conn *net.UDPConn){
 }
 
 func receiveMessage(mess string){
-  m := new(message)
-  text := strings.Split(mess, "+")
-  m.from = text[0]
-  m.message = text[2]
-  whatToDo(m)
+	m := new(message)
+	text := strings.Split(mess, "+")
+    m.from = text[0]
+    m.message = text[1]
+    whatToDo(m)
 }
 
 func printMessage(m *message){
