@@ -53,7 +53,6 @@ func receive(conn *net.UDPConn){
 
 
 func send(s string, conn *net.UDPConn){
-	println(s)
 	b := []byte(s)
 	_, _ = conn.Write(b)
 }

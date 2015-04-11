@@ -5,7 +5,7 @@ and "decode" the message struct.*/
 package network
 
 import ("strings"
-	"net")
+			"net")
 
 type message struct{
 	from string
