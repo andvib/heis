@@ -45,12 +45,13 @@ func NETWORK_init(){
 	//Asks other units to connect
 	send("n:"+IP, connected["bc"])
 
-	if Master == true{
-		go alive(conn)
-		println("go alive()")
-	}else{
+	go alive(conn)
+
+	if Master == false{
 		go slave()
-		go receive(recConn)
+	/*}else{
+		go slave()
+		//go receive(recConn)*/
 	}
 	
 	println(Master)
@@ -72,31 +73,31 @@ func alive(conn *net.UDPConn){
 }
 
 func slave() {
-  for ; Master == false ; {
-    timeout()
-	time.Sleep(50*time.Millisecond)
-  }
+	for ; Master == false ; {
+	    timeout()
+		time.Sleep(50*time.Millisecond)
+	}
 }
 
 func whatToDo(m *message){
-  //Checks what to do with the new message
-  if m.message == "am"{
+	//Checks what to do with the new message
+	if m.message == "am"{
 		//Alive-signal from master
-    LastSignal = time.Now()
-    if connected["Master"] == nil{
-      connect(m.from)
-      MasterConn = connected[m.from]
-    }
+	    LastSignal = time.Now()
+	    if connected["Master"] == nil{
+		    connect(m.from)
+		    MasterConn = connected[m.from]
+	    }
 	}else if m.message == "as"{
 		//Alive-signal from slave
 		
   }else if m.message == "b"{
-    println("Ny bestilling")
+	  println("Ny bestilling")
   }else if m.message == "c"{
-    shouldConnect(m.from)
+	  shouldConnect(m.from)
   }else if m.message[0] == 110{
-    ip := strings.Split(m.message, ":")
-    shouldConnect(ip[1])
+	  ip := strings.Split(m.message, ":")
+	  shouldConnect(ip[1])
   }
 }
 
@@ -117,6 +118,5 @@ func timeout(){
     //No master on the network
     Master = true
     println("Tar over som master")
-    //go alive()
   }
 }
