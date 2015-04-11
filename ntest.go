@@ -1,7 +1,13 @@
 package main
 
-import (."./driver/network")
+import (."./driver/network"
+		"runtime")
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	NETWORK_init()
+	
+	for ; true ; {
+	}
 }

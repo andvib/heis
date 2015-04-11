@@ -44,7 +44,6 @@ func NETWORK_init(){
 
 	//Asks other units to connect
 	send("n:"+IP, connected["bc"])
-
 	if Master == true{
 		go alive(conn)
 		println("go alive()")
