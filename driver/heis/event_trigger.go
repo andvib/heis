@@ -1,5 +1,5 @@
 package driver
-/*
+
 type floorReachedEvent struct{
 	floor int
 }
@@ -30,4 +30,4 @@ func floorSensorPoll(event chan)
 			event <- floorReachedEvent(j)
 		currentFloor = floor
 	}
-}*/
+}

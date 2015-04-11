@@ -4,7 +4,8 @@ sending messages.*/
 package network
 
 import("net"
-	/*"time"*/)
+	/*"time"*/
+		"encoding/json")
 
 func connect(ip string) (connection *net.UDPConn){
   var address string
@@ -37,15 +38,18 @@ func connect(ip string) (connection *net.UDPConn){
 
 
 func receive(conn *net.UDPConn){
-  //Receive message from network
-  received := make([]byte,1024)
-  for ; true ; {
-    _, _, _ = conn.ReadFromUDP(received)
-    println("Motatt: ", string(received))
-	go receiveMessage(string(received))
-  }
-  conn.Close()
-  println("Stenger mottak")
+	//Receive message from network
+	received := make([]byte,1024)
+	var s string
+	for ; true ; {
+		_, _, _ = conn.ReadFromUDP(received)
+		_ = json.Unmarshal(received, &s)
+		println("Motatt: ", s)
+		//println("Motatt: ", string(received))
+		//go receiveMessage(string(received))
+	}
+	conn.Close()
+	println("Stenger mottak")
 
   //Send received message to message-handling
   //go receiveMessage(string(received))
@@ -53,7 +57,7 @@ func receive(conn *net.UDPConn){
 
 
 func send(s string, conn *net.UDPConn){
-	println("sending message")
-	b := []byte(s)
+	//b := []byte(s)
+	b, _ := json.Marshal(s)
 	_, _ = conn.Write(b)
 }
