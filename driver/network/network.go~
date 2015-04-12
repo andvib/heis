@@ -14,7 +14,7 @@ import("net"
 var connected = make(map[string]*net.UDPConn)
 var Master = false
 var IP string
-var PORT = "3002"
+var PORT = "30020"
 var LastSignal time.Time
 var MasterConn *net.UDPConn
 
@@ -25,6 +25,8 @@ func NETWORK_init(){
 	adr, _ := net.InterfaceAddrs()
 	ip := strings.Split(adr[1].String(), "/")
 	IP = ip[0]
+
+	println(IP)
 
 	//Connect as listener
 	recAddr, _ := net.ResolveUDPAddr("udp",":" + PORT)
@@ -49,11 +51,7 @@ func NETWORK_init(){
 
 	if Master == false{
 		go slave()
-	/*}else{
-		go slave()
-		//go receive(recConn)*/
 	}
-	
 	println(Master)
 }
 

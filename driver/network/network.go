@@ -26,6 +26,8 @@ func NETWORK_init(){
 	ip := strings.Split(adr[1].String(), "/")
 	IP = ip[0]
 
+	println(IP)
+
 	//Connect as listener
 	recAddr, _ := net.ResolveUDPAddr("udp",":" + PORT)
 	recConn, _ := net.ListenUDP("udp", recAddr)
@@ -49,17 +51,12 @@ func NETWORK_init(){
 
 	if Master == false{
 		go slave()
-	/*}else{
-		go slave()
-		//go receive(recConn)*/
 	}
-	
 	println(Master)
 }
 
 
 func alive(conn *net.UDPConn){
-	println("alive()")
 	for ; true ; {
 		if Master {
     		sendMessage("am", conn)

@@ -25,16 +25,7 @@ func stateMachine(){
 		}
 
 	case "MOVING" :
-		if Event == ORDERED_FLOOR_REACHED {
-			//Stop motor
-			State = "DOOR_OPEN"
-			heis.ELEV_set_door_open_lamp(1)
-			return
-		}
-		return
-
-	case "DOOR_OPEN" :
-		
+		if Event == 
 				
 
 
