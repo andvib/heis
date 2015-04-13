@@ -6,41 +6,20 @@ import (."./driver/heis/"
 
 func main(){
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	/*println(LAMP_CHANNEL[1][2])*/
-	//println("hei")
-	//ELEV_set_floor_indicator(3)
 
 	if ELEV_init() == 0{
 		println("Ikke initialisert!")
 	}
 	
-	//ELEV_set_button_lamp(0, 2, 1)
-
-	//ELEV_set_stop_lamp(1)
-
-	//ELEV_set_floor_indicator(2)
-
-	/*for ; true ; {
-		println(ELEV_get_button_signal(BUTTON_CALL_UP, 2))
-	}*/
-
-	//ELEV_set_button_lamp(0,1,1)
-
-	//ELEV_set_motor_direction(DIRN_UP)
-	//println("Heis igang")
-    go FloorSensor()
-	//ButtonPush()
-
-    //hendelse := new(Event)  
-    //var hendelse *Event
+    //go FloorSensor()
+	go ButtonPush()
 
 	for ; true ; {
-        hendelse := <- C
+        hendelse := <- ButtonChan
         
-        println("EVENT: ", hendelse.Event)
+        println("BUTTON: ", hendelse.Button)
         println("FLOOR: ", hendelse.Floor)
-
-		//hendelse.Floor = 1
+		
 		
 		/*if ELEV_get_floor_sensor_signal() == N_FLOORS - 1{
 		    ELEV_set_motor_direction(DIRN_DOWN)
