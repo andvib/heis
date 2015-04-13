@@ -1,11 +1,13 @@
 package driver
 
+//import("./driver/heis/")
+
 type Event struct{
 	floor int
 	event string	
 }
 
-var c = make(chan Event, 1)
+var C = make(chan *Event)
 
 /*type floorReachedEvent struct{
 	floor int
@@ -16,8 +18,25 @@ type buttonPressedEvent struct{
 	button elev_button_type
 }*/
 
+func FloorSensor(){
+	currentFloor := -1
+	var floor int
+	for ; true ; {
+        floor = ELEV_get_floor_sensor_signal()
+        if (floor != -1) && (currentFloor != floor){
+            currentFloor = floor
+            var hend Event
+            hend.floor = floor
+            hend.event = "NEW_FLOOR"
+            C <- &hend
+        }
+    }
+}  
 
-func buttonPoll(button elev_button_type, event chan) {
+
+
+
+/*func buttonPoll(button elev_button_type, event chan) {
 	alreadyPushed := [N_FLOORS]int{0,0,0,0}
 	for j:=0; j < N_FLOORS-1; j++{
 		buttonPushed := ELEV_get_button_signal(button, j)
@@ -37,4 +56,4 @@ func floorSensorPoll(event chan)
 			event <- floorReachedEvent(j)
 		currentFloor = floor
 	}
-}
+}*/

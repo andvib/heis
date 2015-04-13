@@ -20,12 +20,21 @@ func main(){
 		println(ELEV_get_button_signal(BUTTON_CALL_UP, 2))
 	}*/
 
-	ELEV_set_motor_direction(DIRN_UP)
+	//ELEV_set_motor_direction(DIRN_UP)
+
+    FloorSensor()
+
+    //hendelse := new(Event)  
+    var hendelse *Event
 
 	for ; true ; {
-		//println(ELEV_get_floor_sensor_signal())
-		if ELEV_get_floor_sensor_signal() == N_FLOORS - 1{
-			ELEV_set_motor_direction(DIRN_DOWN)
+        hendelse = <- C
+        
+        println("EVENT: ", hendelse.event)
+        println("FLOOR: ", *hendelse.floor)
+
+		/*if ELEV_get_floor_sensor_signal() == N_FLOORS - 1{
+		    ELEV_set_motor_direction(DIRN_DOWN)
 			//println(ELEV_get_floor_sensor_signal())
 		} else if ELEV_get_floor_sensor_signal() == 0{
 			ELEV_set_motor_direction(DIRN_UP)
@@ -33,6 +42,7 @@ func main(){
 
 		if ELEV_get_stop_signal() == 1 {
 			ELEV_set_motor_direction(DIRN_STOP)
-		}
+		}*/
+			
 	}
 }
