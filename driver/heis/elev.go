@@ -55,7 +55,7 @@ func ELEV_init() (int){
 
 	//Clear stop lamp, door open lamp, and set floor indicator to ground floor
 	ELEV_set_stop_lamp(0)
-    ELEV_set_door_open_lamp(0)
+   	ELEV_set_door_open_lamp(0)
    	ELEV_set_floor_indicator(0)
 
 	return 1
@@ -117,7 +117,7 @@ func ELEV_get_floor_sensor_signal() (int){
 
 
 func ELEV_set_floor_indicator(floor int) {
-	if floor >= 0 || floor < N_FLOORS {
+	if floor < 0 || floor > N_FLOORS {
 		return 
 	}
 	

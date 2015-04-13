@@ -3,11 +3,11 @@ package driver
 //import("./driver/heis/")
 
 type Event struct{
-	floor int
-	event string	
+	Floor int
+	Event string	
 }
 
-var C = make(chan *Event)
+var C = make(chan Event)
 
 /*type floorReachedEvent struct{
 	floor int
@@ -19,16 +19,18 @@ type buttonPressedEvent struct{
 }*/
 
 func FloorSensor(){
+    println("FloorSensor()")
 	currentFloor := -1
 	var floor int
 	for ; true ; {
         floor = ELEV_get_floor_sensor_signal()
         if (floor != -1) && (currentFloor != floor){
             currentFloor = floor
-			ELEV_set_floor_indicator(floor)
+	        ELEV_set_floor_indicator(floor)
+            println("NY ETASJE: ", floor)            
             var event Event
-            event.floor = floor
-            event.event = "NEW_FLOOR"
+            event.Floor = floor
+            event.Event = "NEW_FLOOR"
             C <- &event
         }
     }
@@ -36,22 +38,24 @@ func FloorSensor(){
 
 
 func ButtonPush() {
-
+    println("ButtonPush()")
 	for ; true ; {
 		for i := 0 ; i < 4 ; i++{
-			if (i != 3) && (ELEV_get_button_signal(0,i)){
-				for ; (ELEV_get_button_signal(0,i)) ; {
+			if (i != 3) && (ELEV_get_button_signal(0,i) == 1){
+				for ; (ELEV_get_button_signal(0,i)) == 1 ; {
 				}
 				println("Knappetrykk: OPP, ", i)
-			}else if (i != 0) && (ELEV_get_button_signal(1,i)){
-				for ; (ELEV_get_button_signal(1,i)) ; {
+			}else if (i != 0) && (ELEV_get_button_signal(1,i) == 1){
+				for ; (ELEV_get_button_signal(1,i) == 1) ; {
 				}
 				println("Knappetrykk: NED, ", i)
-			}else if (ELEV_get_button_signal(2,i)){
-				for ; (ELEV_get_button_signal(2,i)) {
+			}else if (ELEV_get_button_signal(2,i) == 1){
+				for ; (ELEV_get_button_signal(2,i) == 1) ; {
 				}
 				println("Knappetrykk: INNE, ", i)
 			}
+        }
+    }
 }
 	
 

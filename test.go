@@ -1,12 +1,14 @@
 package main
 
 import (."./driver/heis/"
-	/*"fmt"*/)
+	/*"fmt"*/
+		"runtime")
 
 func main(){
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	/*println(LAMP_CHANNEL[1][2])*/
 	//println("hei")
-	//Elev_set_floor_indicator(1)
+	//ELEV_set_floor_indicator(3)
 
 	if ELEV_init() == 0{
 		println("Ikke initialisert!")
@@ -16,23 +18,30 @@ func main(){
 
 	//ELEV_set_stop_lamp(1)
 
+	//ELEV_set_floor_indicator(2)
+
 	/*for ; true ; {
 		println(ELEV_get_button_signal(BUTTON_CALL_UP, 2))
 	}*/
 
-	//ELEV_set_motor_direction(DIRN_UP)
+	//ELEV_set_button_lamp(0,1,1)
 
-    FloorSensor()
+	//ELEV_set_motor_direction(DIRN_UP)
+	//println("Heis igang")
+    go FloorSensor()
+	//ButtonPush()
 
     //hendelse := new(Event)  
-    var hendelse *Event
+    //var hendelse *Event
 
 	for ; true ; {
-        hendelse = <- C
+        hendelse := <- C
         
-        println("EVENT: ", hendelse.event)
-        println("FLOOR: ", *hendelse.floor)
+        println("EVENT: ", hendelse.Event)
+        println("FLOOR: ", hendelse.Floor)
 
+		//hendelse.Floor = 1
+		
 		/*if ELEV_get_floor_sensor_signal() == N_FLOORS - 1{
 		    ELEV_set_motor_direction(DIRN_DOWN)
 			//println(ELEV_get_floor_sensor_signal())
@@ -42,7 +51,7 @@ func main(){
 
 		if ELEV_get_stop_signal() == 1 {
 			ELEV_set_motor_direction(DIRN_STOP)
-		}*/
-			
+		}
+	*/		
 	}
 }
