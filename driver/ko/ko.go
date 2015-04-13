@@ -19,6 +19,8 @@ func Q_init() {
 func addOrder(floor int, dir string) {
 	//dir is UP, DOWN or CMD
 
+    q = emptyQ()
+
 	switch dir {
 	case "UP" :
 		if (Q_up[floor] == 0){
@@ -38,4 +40,18 @@ func addOrder(floor int, dir string) {
 			ELEV_set_button_lamp(2,floor,1)
 		}
 	}
+
+    if (q == 1) {
+        //Send NEW_ORDER event
+    }
+
+}
+
+
+func emptyQ()(int){
+	for i := 0 ; i < 4; i++{
+        if (Q_up[i] == 1) || (Q_down[i] == 1) || (Q_cmd[i] == 1){
+            return 0
+        }
+    return 1
 }
