@@ -1,0 +1,16 @@
+package ko
+
+import ()
+
+var Q_up [4]int
+var Q_down [4]int
+var Q_cmd [4]int
+
+
+func Q_init() {
+	for i := 0 ; i < 4 ; i++ {
+		Q_up[i] = 0
+		Q_down[i] = 0
+		Q_cmd[i] = 0
+	}
+}

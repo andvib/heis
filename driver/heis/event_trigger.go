@@ -25,14 +25,34 @@ func FloorSensor(){
         floor = ELEV_get_floor_sensor_signal()
         if (floor != -1) && (currentFloor != floor){
             currentFloor = floor
-            var hend Event
-            hend.floor = floor
-            hend.event = "NEW_FLOOR"
-            C <- &hend
+			ELEV_set_floor_indicator(floor)
+            var event Event
+            event.floor = floor
+            event.event = "NEW_FLOOR"
+            C <- &event
         }
     }
 }  
 
+
+func ButtonPush() {
+	for ; true ; {
+		for i := 0 ; i < 4 ; i++{
+			if (i != 3) && (ELEV_get_button_signal(0,i)){
+				for ; (ELEV_get_button_signal(0,i)) ; {
+				}
+				println("Knappetrykk: OPP, ", i)
+			}else if (i != 0) && (ELEV_get_button_signal(1,i)){
+				for ; (ELEV_get_button_signal(1,i)) ; {
+				}
+				println("Knappetrykk: NED, ", i)
+			}else if (ELEV_get_button_signal(2,i)){
+				for ; (ELEV_get_button_signal(2,i)) {
+				}
+				println("Knappetrykk: INNE, ", i)
+			}
+}
+	
 
 
 
