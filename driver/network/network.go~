@@ -40,9 +40,12 @@ func NETWORK_init(){
 	masterConn.lastSignal = time.Now()
 	var temp time.Time
 	temp = time.Now()
-	for ; time.Since(temp) < 350*time.Millisecond && Master == false; {
-		timeout()
+
+	go timeout()
+
+	for ; (time.Since(temp) < 350*time.Millisecond) && (Master == false) ; {
 	}
+
 	conn := connect("")
 
 	//Asks other units to connect
@@ -67,7 +70,7 @@ func alive(conn *net.UDPConn){
 			sendMessage("as", conn)
 			time.Sleep(1000*time.Millisecond)
 		}
-  }
+	}
 }
 
 func slave() {
@@ -81,7 +84,7 @@ func whatToDo(m *message){
 	//Checks what to do with the new message
 	if m.message == "am"{
 		//Alive-signal from master
-		LastSignal = time.Now()
+		masterConn.lastSignal = time.Now()
 	    /*if MasterConn == nil{
 			connect(m.from)
 			MasterConn = connected[m.from]
@@ -112,7 +115,7 @@ func shouldConnect(addr string){
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(masterConn.lastSignal) > 200*time.Millisecond) {
+		if (time.Since(masterConn.lastSignal) > 200*time.Millisecond) && (Master == false){
 			//No master on the network
 			Master = true
 			println("Tar over som master")
@@ -128,11 +131,11 @@ func timeout(){
 	
 
 
-	//Checks for alive signal from master
+	/*//Checks for alive signal from master
 	if time.Since(LastSignal) > 200*time.Millisecond {
 		//No master on the network
 		Master = true
 		println("Tar over som master")
 		//connected["Master"] = nil
 	}
-}
+}*/
