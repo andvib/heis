@@ -9,9 +9,9 @@ import("net"
 	/*"runtime"*/)
 
 type connection struct{
-	IP string
-	Conn *net.UDPConn
-	Alive int
+	ip string
+	conn *net.UDPConn
+	lastSignal time.Time
 }
 
 
@@ -19,7 +19,6 @@ var connected []connection
 var Master = false
 var IP string
 var PORT = "30020"
-var LastSignal time.Time
 var masterConn connection
 var broadcast connection
 
@@ -30,8 +29,6 @@ func NETWORK_init(){
 	ip := strings.Split(adr[1].String(), "/")
 	IP = ip[0]
 
-	println(IP)
-
 	//Connect as listener
 	recAddr, _ := net.ResolveUDPAddr("udp",":" + PORT)
 	recConn, _ := net.ListenUDP("udp", recAddr)
@@ -40,7 +37,7 @@ func NETWORK_init(){
 	go receive(recConn)
 
 	//Check for master on network
-	LastSignal = time.Now()
+	masterConn.lastSignal = time.Now()
 	var temp time.Time
 	temp = time.Now()
 	for ; time.Since(temp) < 350*time.Millisecond && Master == false; {
@@ -49,7 +46,7 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	sendMessage("n", connected["bc"])
+	sendMessage("n", broadcast.conn)
 
 	go alive(conn)
 
@@ -105,7 +102,7 @@ func whatToDo(m *message){
 func shouldConnect(addr string){
   // Iterate throught connected-map to check if the IP is allready connected
   for i := 0 ; i < len(connected) ; i++ {
-    if connected[i].IP == addr{
+    if connected[i].ip == addr{
       //Returns from function if the connection already exists
       return;
     }
@@ -114,6 +111,23 @@ func shouldConnect(addr string){
 }
 
 func timeout(){
+	for ; true ; {		
+		if (time.Since(masterConn.lastSignal) > 200*time.Millisecond) {
+			//No master on the network
+			Master = true
+			println("Tar over som master")
+		}
+
+		for i := 0 ; i < len(connected) ; i++ {
+			if (time.Since(connected[i].lastSignal) > 1200*time.Millisecond) {
+				//Dead
+			}
+		}
+	}
+}
+	
+
+
 	//Checks for alive signal from master
 	if time.Since(LastSignal) > 200*time.Millisecond {
 		//No master on the network

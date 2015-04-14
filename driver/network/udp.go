@@ -4,7 +4,7 @@ sending messages.*/
 package network
 
 import("net"
-	/*"time"*/
+	"time"
 	/*"encoding/json"*/)
 
 func connect(ip string) (connection *net.UDPConn){
@@ -25,9 +25,9 @@ func connect(ip string) (connection *net.UDPConn){
 
 	//Adds the new connection to the map
 	if ip == ""{
-		broadcast.Conn = conn
+		broadcast.conn = conn
 	}else{
-		//connected[ip] = conn
+		appendConn(conn, ip)
 	}
 
 	//Sends a message to the new connection that they should connect as well
@@ -58,3 +58,12 @@ func send(s string, conn *net.UDPConn){
 	//b, _ := json.Marshal(s)
 	_, _ = conn.Write(b)
 }
+
+func appendConn(conn *net.UDPConn, ip string){
+    var temp connection
+    temp.ip = ip
+    temp.conn = conn
+    temp.lastSignal = time.Now()
+    connected = append(connected, temp)
+}
+    
