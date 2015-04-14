@@ -8,6 +8,5 @@ func main() {
 
 	NETWORK_init()
 	
-	for ; true ; {
-	}
+	select{}
 }

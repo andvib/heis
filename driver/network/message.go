@@ -5,7 +5,7 @@ and "decode" the message struct.*/
 package network
 
 import ("strings"
-	"net")
+		"net")
 
 type message struct{
 	from string
@@ -13,11 +13,11 @@ type message struct{
 }
 
 func sendMessage(text string, conn *net.UDPConn){
-  m := new(message)
-  m.from = IP
-  m.message = text
-  messageString := m.from + "+" + m.message
-  send(messageString, conn)
+	m := new(message)
+	m.from = IP
+	m.message = text
+	messageString := m.from + "+" + m.message
+	send(messageString, conn)
 }
 
 func receiveMessage(mess string){
@@ -29,6 +29,6 @@ func receiveMessage(mess string){
 }
 
 func printMessage(m *message){
-  println("From: ", m.from)
-  println("Message: ", m.message)
+	println("From: ", m.from)
+	println("Message: ", m.message)
 }

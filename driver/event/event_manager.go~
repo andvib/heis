@@ -1,60 +1,102 @@
-package event_manager
+package event
 
-import("./driver/heis/")
+import(".././heis/"
+		/*"time"*/
+		".././ko/")
 
 var State string //IDLE, MOVING, DOOR_OPEN
 var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
+var EventFloor int
 var Floor int
 var NextFloor int
+var Dir string
 
-func stateMachine(){
-	switch State {
+func StateMachine(){
+	startUp()
+	for ; true ; {
+		//println("State: ", State)
+		NextFloor = ko.NextInQ(Dir,Floor) 
+		switch State {
 	
-	case "IDLE" :
-		if Event == "NEW_ORDER"{	
-			if NextFloor == Floor {
-				State = "DOOR_OPEN"
-				heis.ELEV_set_door_open_lamp(1)
-				return
-			}else{
-				State = "MOVING"
-				//Function for calculating dir and
-				//and setting direction
-				return
+		case "IDLE" :
+			if Event == "NEW_ORDER"{
+				println("IDLE:NEW_ORDER")
+				NextFloor = ko.NextInQ(Dir,Floor)
+				if NextFloor == Floor {
+					State = "DOOR_OPEN"
+				}else{
+					State = "MOVING"
+					moveToFloor()
+					println("MOVING")
+				}
 			}
-		}
 
-	case "MOVING" :
-		if Event == 
-				
+		case "MOVING" :
+			if Event == "NEW_FLOOR" {
+				Floor = EventFloor
+				if (Floor == NextFloor){
+					driver.ELEV_set_motor_direction(0)
+					State = "DOOR_OPEN"
+				}
+			}
 
-
-}
-
-/*type event
-const (
-	floorReachedEvent
-	buttonPressedEvent
-	
-)
-
-func stateMachine(Event event){
-	switch(Event){
-		case floorReachedEvent{
-			handleFloorReachedEvent()
-		}
-		case buttonPressedEvent{
-			handleButtonPressedEvent()
+		case "DOOR_OPEN" :
+			println("DOOR OPEN")
+			driver.ELEV_set_door_open_lamp(1)
+			//time.Sleep(1*time.Millisecond)
+			driver.ELEV_set_door_open_lamp(0)
+			ko.RemoveOrder(Floor)
+			NextFloor = ko.NextInQ(Dir,Floor)
+			
+			println("NEXT: ", NextFloor)
+			println("FLOOR: ", Floor)
+			if (Floor != NextFloor) && (NextFloor != -1){
+				State = "MOVING"
+				moveToFloor()
+			}else if (NextFloor == -1){
+				println("Going to IDLE")
+				State = "IDLE"
+			}
 		}
 	}
 }
 
-func handleFloorReachedEvent(){
+func ReadEvent() {
+	var event driver.FloorEvent
 
-
+	for ; true ; {
+		event = <- driver.ElevChan
+		Event = event.Event
+		EventFloor = event.Floor
+	}
 }
 
-func handleButtonPressedEvent(){
 
+func moveToFloor() {
+	if (NextFloor == -1) {
+		println("Move to Floor: No order")
+		return
+	}
+
+	if (Floor < NextFloor) {
+		println("MOVETOFLOOR:UP")
+		driver.ELEV_set_motor_direction(1)
+		Dir = "UP"
+	}else if (Floor > NextFloor){
+		println("Moving Down")
+		driver.ELEV_set_motor_direction(-1)
+		Dir = "Down"
+	}
 }
-*/
+
+func startUp() {
+	println("STARTUP")
+	Dir = "UP"
+	driver.ELEV_set_motor_direction(-1)
+	for ; driver.ELEV_get_floor_sensor_signal() == -1 ; {
+	}
+	driver.ELEV_set_motor_direction(0)
+	Floor = driver.ELEV_get_floor_sensor_signal()
+}
+
+

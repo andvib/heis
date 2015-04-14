@@ -8,19 +8,23 @@ import("net"
 	"time"
 	/*"runtime"*/)
 
+type connection struct{
+	IP string
+	Conn *net.UDPConn
+	Alive int
+}
 
 
-
-var connected = make(map[string]*net.UDPConn)
+var connected []connection
 var Master = false
 var IP string
 var PORT = "30020"
 var LastSignal time.Time
-var MasterConn *net.UDPConn
+var masterConn connection
+var broadcast connection
 
 
 func NETWORK_init(){
-	println("NETWORK_INIT")
 	//Retrieve local IP address
 	adr, _ := net.InterfaceAddrs()
 	ip := strings.Split(adr[1].String(), "/")
@@ -45,7 +49,7 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	sendMessage("n", connected["bc"])
+	sendMessage("n", broadcast.Conn)
 
 	go alive(conn)
 
@@ -100,8 +104,8 @@ func whatToDo(m *message){
 
 func shouldConnect(addr string){
   // Iterate throught connected-map to check if the IP is allready connected
-  for key, _ := range connected{
-    if key == addr{
+  for i := 0 ; i < len(connected) ; i++ {
+    if connected[i].IP == addr{
       //Returns from function if the connection already exists
       return;
     }

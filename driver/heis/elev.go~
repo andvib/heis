@@ -117,15 +117,9 @@ func ELEV_get_floor_sensor_signal() (int){
 
 
 func ELEV_set_floor_indicator(floor int) {
-	if floor <= 0 || floor > N_FLOORS {
+	if floor < 0 || floor > N_FLOORS {
 		return 
 	}
-	
-	/*tall := 1
-	test := floor & tall
-	println(test)
-	println(floor)*/
-
 	
    	 // Binary encoding. One light must always be on.
 	if (floor & 0x02) != 0 {
@@ -144,7 +138,7 @@ func ELEV_set_floor_indicator(floor int) {
 
 func ELEV_get_button_signal(button elev_button_type, floor int) (int){
 
-	if !(floor > 0 || floor < N_FLOORS) {
+	if !(floor >= 0 || floor < N_FLOORS) {
 		return 0
 	}
 	if button == BUTTON_CALL_UP && floor == N_FLOORS -1 {
@@ -179,10 +173,6 @@ func ELEV_set_button_lamp(button elev_button_type, floor int, value int) {
 	if !(button == BUTTON_CALL_UP || button == BUTTON_CALL_DOWN || button == BUTTON_COMMAND) {
 		return
 	}
-
-	println(button)
-	println(floor)
-	println(value)
 
 	if value == 1{
 		IO_set_bit(LAMP_CHANNEL[floor][button])
