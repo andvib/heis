@@ -26,6 +26,7 @@ var broadcast Connection
 
 
 func NETWORK_init(){
+    println("NETWORK_init()")
 	//Retrieve local IP address
 	adr, _ := net.InterfaceAddrs()
 	ip := strings.Split(adr[1].String(), "/")
@@ -48,6 +49,8 @@ func NETWORK_init(){
 	for ; (time.Since(temp) < 350*time.Millisecond) && (Master == false) ; {
 	}
 
+    println("Master: ", Master)
+
 	conn := connect("")
 
 	//Asks other units to connect
@@ -61,7 +64,6 @@ func alive(conn *net.UDPConn){
 	for ; true ; {
 		if Master {
     		sendMessage("am", conn)
-			println("Alive")
     		time.Sleep(100*time.Millisecond)
 		}else{
 			sendMessage("as", conn)
@@ -94,9 +96,11 @@ func whatToDo(m *message){
             }
         }
     }else if m.message == "n" {
+        println("New connection from: ", m.from)
         conn := connect(m.from)
         sendMessage("c", conn)
     }else if m.message == "c" {
+        println("Connect to: ", m.from)
         connect(m.from)
     }        
 }
@@ -106,11 +110,13 @@ func timeout(){
 	for ; true ; {		
 		if (time.Since(masterConn.LastSignal) > 200*time.Millisecond) && (Master == false){
 			//No master on the network
+            println("Master timeout")
 			WhosMaster()
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
+                println("Slave timeout: ", Connected[i].IP)
 				RemoveConn(i)
 			}
 		}
@@ -150,6 +156,7 @@ func WhosMaster() {
     }
     
     if (me == true) {
+        println("I am the new master")
         Master = true
     }
 

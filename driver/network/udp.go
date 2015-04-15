@@ -23,14 +23,13 @@ func connect(ip string) (connection *net.UDPConn){
 
 	//Adds the new connection to the map
 	if ip == ""{
+		println("Broadcast connection established")
 		broadcast.Conn = conn
 	}else{
+		println("Connected to: ", ip)
 		AppendConn(conn, ip)
 	}
 
-	//Sends a message to the new connection that they should connect as well
-	/*text := "c"
-	sendMessage(text, conn)*/
 	return conn
 }
 
@@ -40,7 +39,6 @@ func receive(conn *net.UDPConn){
 	received := make([]byte,500)
 	for ; true ; {
 		_, _, _ = conn.ReadFromUDP(received)
-		println("Motatt: ", string(received))
 		go receiveMessage(string(received))
 	}
 	conn.Close()

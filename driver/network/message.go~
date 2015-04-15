@@ -32,9 +32,3 @@ func printMessage(m *message){
 	println("From: ", m.from)
 	println("Message: ", m.message)
 }
-
-func WhosMaster() {
-	me := false
-
-
-}
