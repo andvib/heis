@@ -4,23 +4,25 @@ and init function.*/
 package network
 
 import("net"
-	"strings"
-	"time"
-	/*"runtime"*/)
+	   "strings"
+	   "time"
+       "strconv"
+	   /*"runtime"*/)
 
-type connection struct{
-	ip string
-	conn *net.UDPConn
-	lastSignal time.Time
+
+type Connection struct{
+	IP string
+	Conn *net.UDPConn
+	LastSignal time.Time
 }
 
 
-var connected []connection
+var Connected []Connection
 var Master = false
 var IP string
 var PORT = "30020"
-var masterConn connection
-var broadcast connection
+var masterConn Connection
+var broadcast Connection
 
 
 func NETWORK_init(){
@@ -37,7 +39,7 @@ func NETWORK_init(){
 	go receive(recConn)
 
 	//Check for master on network
-	masterConn.lastSignal = time.Now()
+	masterConn.LastSignal = time.Now()
 	var temp time.Time
 	temp = time.Now()
 
@@ -49,14 +51,9 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	sendMessage("n", broadcast.conn)
+	sendMessage("n", broadcast.Conn)
 
 	go alive(conn)
-
-	if Master == false{
-		go slave()
-	}
-	println(Master)
 }
 
 
@@ -73,69 +70,89 @@ func alive(conn *net.UDPConn){
 	}
 }
 
-func slave() {
-	for ; Master == false ; {
-	    timeout()
-		time.Sleep(100*time.Millisecond)
-	}
-}
 
 func whatToDo(m *message){
 	//Checks what to do with the new message
 	if m.message == "am"{
 		//Alive-signal from master
-		masterConn.lastSignal = time.Now()
-	    /*if MasterConn == nil{
-			connect(m.from)
-			MasterConn = connected[m.from]
-		}*/
-	}/*else if m.message == "as"{
-		//Alive-signal from slave
-		
-	}else if m.message == "b"{
-		println("Ny bestilling")
-	}else if m.message == "c"{
-		shouldConnect(m.from)
-	}else if m.message[0] == 110{
-		ip := strings.Split(m.message, ":")
-		shouldConnect(ip[1])
-  	}*/
+		masterConn.LastSignal = time.Now()
+	    if masterConn.IP == ""{
+			//masterConn.Conn = connect(m.from)
+            masterConn.IP = m.from
+		    masterConn.LastSignal = time.Now()
+            for i := 0 ; i < len(Connected) ; i++ {
+                if m.from == Connected[i].IP {
+                    masterConn.Conn = Connected[i].Conn
+                }
+            }
+		}
+
+    }else if m.message == "as" {
+        for i := 0 ; i < len(Connected) ; i++ {
+            if m.from == Connected[i].IP {
+                Connected[i].LastSignal = time.Now()
+            }
+        }
+    }else if m.message == "n" {
+        conn := connect(m.from)
+        sendMessage("c", conn)
+    }else if m.message == "c" {
+        connect(m.from)
+    }        
 }
 
-func shouldConnect(addr string){
-  // Iterate throught connected-map to check if the IP is allready connected
-  for i := 0 ; i < len(connected) ; i++ {
-    if connected[i].ip == addr{
-      //Returns from function if the connection already exists
-      return;
-    }
-  }
-  connect(addr)
-}
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(masterConn.lastSignal) > 200*time.Millisecond) && (Master == false){
+		if (time.Since(masterConn.LastSignal) > 200*time.Millisecond) && (Master == false){
 			//No master on the network
-			Master = true
-			println("Tar over som master")
+			WhosMaster()
 		}
 
-		for i := 0 ; i < len(connected) ; i++ {
-			if (time.Since(connected[i].lastSignal) > 1200*time.Millisecond) {
-				//Dead
+		for i := 0 ; i < len(Connected) ; i++ {
+			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
+				RemoveConn(i)
 			}
 		}
 	}
 }
-	
 
 
-	/*//Checks for alive signal from master
-	if time.Since(LastSignal) > 200*time.Millisecond {
-		//No master on the network
-		Master = true
-		println("Tar over som master")
-		//connected["Master"] = nil
-	}
-}*/
+func AppendConn(conn *net.UDPConn, ip string){
+    var temp Connection
+    temp.IP = ip
+    temp.Conn = conn
+    temp.LastSignal = time.Now()
+    Connected = append(Connected, temp)
+}
+
+
+func RemoveConn(index int) {
+	Connected = append(Connected[:index], Connected[index+1:]...)
+}
+
+
+func WhosMaster() {
+    me := true
+    number := len(IP)
+    own_1, _ := strconv.Atoi(string(IP[number-1]))
+    own_2, _ := strconv.Atoi(string(IP[number-2]))
+
+    for i := 0 ; i < len(Connected) ; i++ {
+        other_1, _ := strconv.Atoi(string(Connected[i].IP[number-1]))
+        other_2, _ := strconv.Atoi(string(Connected[i].IP[number-2]))
+
+        if (other_1 <= own_1) {
+            if (other_2 <= own_2) {
+                me = false
+            }
+        }
+    }
+    
+    if (me == true) {
+        Master = true
+    }
+
+    masterConn.IP = ""
+    masterConn.Conn = nil
+}

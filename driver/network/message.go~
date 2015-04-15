@@ -5,7 +5,7 @@ and "decode" the message struct.*/
 package network
 
 import ("strings"
-	"net")
+		"net")
 
 type message struct{
 	from string
@@ -31,4 +31,10 @@ func receiveMessage(mess string){
 func printMessage(m *message){
 	println("From: ", m.from)
 	println("Message: ", m.message)
+}
+
+func WhosMaster() {
+	me := false
+
+
 }
