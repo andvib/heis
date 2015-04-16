@@ -21,8 +21,8 @@ var Connected []Connection
 var Master = false
 var IP string
 var PORT = "30020"
-var masterConn Connection
-var broadcast Connection
+var MasterConn Connection
+var Broadcast Connection
 
 
 func NETWORK_init(){
@@ -40,7 +40,7 @@ func NETWORK_init(){
 	go receive(recConn)
 
 	//Check for master on network
-	masterConn.LastSignal = time.Now()
+	MasterConn.LastSignal = time.Now()
 	var temp time.Time
 	temp = time.Now()
 
@@ -54,7 +54,7 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	sendMessage("nw", broadcast.Conn)
+	SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
 }
@@ -63,10 +63,10 @@ func NETWORK_init(){
 func alive(conn *net.UDPConn){
 	for ; true ; {
 		if Master {
-    		sendMessage("am", conn)
+    		SendMessage("am", conn)
     		time.Sleep(100*time.Millisecond)
 		}else{
-			sendMessage("as", conn)
+			SendMessage("as", conn)
 			time.Sleep(1000*time.Millisecond)
 		}
 	}
@@ -79,14 +79,14 @@ func whatToDo(m *message){
 	if m.message == "am"{
         //println("Alive signal from master")
 		//Alive-signal from master
-		masterConn.LastSignal = time.Now()
-	    if masterConn.IP == ""{
+		MasterConn.LastSignal = time.Now()
+	    if MasterConn.IP == ""{
 			//masterConn.Conn = connect(m.from)
-            masterConn.IP = m.from
-		    masterConn.LastSignal = time.Now()
+            MasterConn.IP = m.from
+		    MasterConn.LastSignal = time.Now()
             for i := 0 ; i < len(Connected) ; i++ {
                 if m.from == Connected[i].IP {
-                    masterConn.Conn = Connected[i].Conn
+                    MasterConn.Conn = Connected[i].Conn
                 }
             }
 		}
@@ -104,7 +104,7 @@ func whatToDo(m *message){
 		}
         println("New connection from: ", m.from)
         conn := connect(m.from)
-        sendMessage("co", conn)
+        SendMessage("co", conn)
     }else if m.message == "co" {
         println("Connect to: ", m.from)
         connect(m.from)
@@ -114,7 +114,7 @@ func whatToDo(m *message){
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(masterConn.LastSignal) > 200*time.Millisecond) && (Master == false){
+		if (time.Since(MasterConn.LastSignal) > 200*time.Millisecond) && (Master == false){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()
@@ -175,6 +175,6 @@ func WhosMaster() {
         Master = true
     }
 
-    masterConn.IP = ""
-    masterConn.Conn = nil
+    MasterConn.IP = ""
+    MasterConn.Conn = nil
 }

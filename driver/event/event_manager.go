@@ -1,7 +1,7 @@
 package event
 
 import(".././heis/"
-		/*"time"*/
+		"time"
 		".././ko/")
 
 var State string //IDLE, MOVING, DOOR_OPEN
@@ -42,8 +42,9 @@ func StateMachine(){
 		case "DOOR_OPEN" :
 			println("DOOR OPEN")
 			driver.ELEV_set_door_open_lamp(1)
-			//time.Sleep(1*time.Millisecond)
+			time.Sleep(3000*time.Millisecond)
 			driver.ELEV_set_door_open_lamp(0)
+			println("DOOR CLOSED")
 			ko.RemoveOrder(Floor)
 			NextFloor = ko.NextInQ(Dir,Floor)
 			
@@ -55,6 +56,7 @@ func StateMachine(){
 			}else if (NextFloor == -1){
 				println("Going to IDLE")
 				State = "IDLE"
+				Event = ""
 			}
 		}
 	}

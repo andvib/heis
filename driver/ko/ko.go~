@@ -84,7 +84,7 @@ func NextInQ(dir string, floor int) (int) {
 		}
 		
 		for j := 3 ; j > floor ; j-- {
-			if (Q_down[j] == 1) || (Q_cmd[j] == 1) {
+			if (Q_down[j] == 1) {
 				return j
 			}
 		}
@@ -98,7 +98,7 @@ func NextInQ(dir string, floor int) (int) {
 		}
 	
 		for j := 0 ; j < floor ; j++ {
-			if (Q_up[j] == 1) || (Q_cmd[j] == 1){
+			if (Q_up[j] == 1){
 				return j
 			}
 		}

@@ -41,7 +41,7 @@ func ButtonPush() {
 
    				for ; (ELEV_get_button_signal(0,i)) == 1 ; {
 				}
-                event.Button = "UP"
+                event.Button = "U"
                 event.Floor = i
                 ButtonChan <- event
 
@@ -49,7 +49,7 @@ func ButtonPush() {
 
 				for ; (ELEV_get_button_signal(1,i) == 1) ; {
 				}
-				event.Button = "DOWN"
+				event.Button = "D"
                 event.Floor = i
                 ButtonChan <- event
     
@@ -57,7 +57,7 @@ func ButtonPush() {
 
 				for ; (ELEV_get_button_signal(2,i) == 1) ; {
 				}
-				event.Button = "CMD"
+				event.Button = "C"
                 event.Floor = i
                 ButtonChan <- event
 			}

@@ -12,7 +12,7 @@ type message struct{
 	message string
 }
 
-func sendMessage(text string, conn *net.UDPConn){
+func SendMessage(text string, conn *net.UDPConn){
 	m := new(message)
 	m.from = IP
 	m.message = text

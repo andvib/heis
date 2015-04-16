@@ -24,7 +24,7 @@ func connect(ip string) (connection *net.UDPConn){
 	//Adds the new connection to the map
 	if ip == ""{
 		println("Broadcast connection established")
-		broadcast.Conn = conn
+		Broadcast.Conn = conn
 	}else{
 		println("Connected to: ", ip)
 		AppendConn(conn, ip)

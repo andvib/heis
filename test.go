@@ -1,10 +1,11 @@
 package main
 
 import (."./driver/heis/"
-		/*"fmt"*/
-		"runtime"
-		"./driver/event/"
-		"./driver/ko")
+	/*"fmt"*/
+	"runtime"
+	"./driver/event/"
+	"./driver/ko/"
+	"./driver/costfunc/")
 
 func main(){
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -22,8 +23,10 @@ func main(){
 	go event.StateMachine()
 
 	ko.Q_init()
-	go ko.ButtonHandle()
+	//go ko.ButtonHandle()
 	go event.ReadEvent()
+
+	go costfunc.ButtonHandle()
 
 	select {}
 }

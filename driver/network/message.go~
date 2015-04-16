@@ -12,7 +12,7 @@ type message struct{
 	message string
 }
 
-func sendMessage(text string, conn *net.UDPConn){
+func SendMessage(text string, conn net.UDPConn){
 	m := new(message)
 	m.from = IP
 	m.message = text
@@ -21,7 +21,7 @@ func sendMessage(text string, conn *net.UDPConn){
 }
 
 func receiveMessage(mess string){
-	println("Receive message")
+	//println("Receive message")
 	m := new(message)
 	text := strings.Split(mess, "+")
     m.from = text[0]
