@@ -86,7 +86,7 @@ func moveToFloor() {
 	}else if (Floor > NextFloor){
 		println("Moving Down")
 		driver.ELEV_set_motor_direction(-1)
-		Dir = "Down"
+		Dir = "DOWN"
 	}
 }
 

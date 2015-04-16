@@ -5,7 +5,8 @@ import (."./driver/heis/"
 	"runtime"
 	"./driver/event/"
 	"./driver/ko/"
-	"./driver/costfunc/")
+	"./driver/costfunc/"
+	"time")
 
 func main(){
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -23,10 +24,14 @@ func main(){
 	go event.StateMachine()
 
 	ko.Q_init()
-	//go ko.ButtonHandle()
+	go ko.ButtonHandle()
 	go event.ReadEvent()
 
-	go costfunc.ButtonHandle()
+	//go costfunc.ButtonHandle()
 
-	select {}
+	//select {}
+	for ; true ; {
+		costfunc.Cost()
+		time.Sleep(1000*time.Millisecond)
+	}
 }

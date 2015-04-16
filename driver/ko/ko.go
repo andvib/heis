@@ -6,12 +6,20 @@ var Q_up [4]int
 var Q_down [4]int
 var Q_cmd [4]int
 
+type Queue struct {
+	UP [4]int
+	DOWN [4]int
+	CMD [4]int
+}
+
+var Q Queue
+
 
 func Q_init() {
 	for i := 0 ; i < 4 ; i++ {
-		Q_up[i] = 0
-		Q_down[i] = 0
-		Q_cmd[i] = 0
+		Q.UP[i] = 0
+		Q.DOWN[i] = 0
+		Q.CMD[i] = 0
 	}
 }
 
@@ -34,24 +42,24 @@ func addOrder(floor int, dir string) {
     q := emptyQ()
 
 	switch dir {
-	case "UP" :
+	case "U" :
 		println("NEW ORDER UP")
-		if (Q_up[floor] == 0){
-			Q_up[floor] = 1
+		if (Q.UP[floor] == 0){
+			Q.UP[floor] = 1
 			ELEV_set_button_lamp(0,floor,1)
 		}
 
-	case "DOWN" :
+	case "D" :
 		println("NEW ORDER DOWN")
-		if (Q_down[floor] == 0){
-			Q_down[floor] = 1
+		if (Q.DOWN[floor] == 0){
+			Q.DOWN[floor] = 1
 			ELEV_set_button_lamp(1,floor,1)
 		}
 
-	case "CMD" :
+	case "C" :
 		println("NEW ORDER CMD")
-		if (Q_cmd[floor] == 0){
-			Q_cmd[floor] = 1
+		if (Q.CMD[floor] == 0){
+			Q.CMD[floor] = 1
 			ELEV_set_button_lamp(2,floor,1)
 		}
 	}
@@ -78,34 +86,33 @@ func NextInQ(dir string, floor int) (int) {
 	switch dir {
 	case "UP" :
 		for i := floor ; i < 4 ; i++ {
-			if (Q_up[i] == 1) || (Q_cmd[i] == 1) {
+			if (Q.UP[i] == 1) || (Q.CMD[i] == 1) {
 				return i
 			}
 		}
 		
 		for j := 3 ; j > floor ; j-- {
-			if (Q_down[j] == 1) {
+			if (Q.DOWN[j] == 1) {
 				return j
 			}
 		}
 
-
 	case "DOWN" :
 		for i := floor ; i > -1 ; i-- {
-			if (Q_down[i] == 1) || (Q_cmd[i] == 1) {
+			if (Q.DOWN[i] == 1) || (Q.CMD[i] == 1) {
 				return i
 			}
 		}
 	
 		for j := 0 ; j < floor ; j++ {
-			if (Q_up[j] == 1){
+			if (Q.UP[j] == 1){
 				return j
 			}
 		}
 	}
 
 	for i := 0 ; i < 4 ; i++{
-		if (Q_up[i] == 1) || (Q_down[i] == 1) || (Q_cmd[i] == 1){
+		if (Q.UP[i] == 1) || (Q.DOWN[i] == 1) || (Q.CMD[i] == 1){
 			return i
 		}
 	}
@@ -115,9 +122,9 @@ func NextInQ(dir string, floor int) (int) {
 
 
 func RemoveOrder(floor int) {
-	Q_up[floor] = 0
-	Q_down[floor] = 0
-	Q_cmd[floor] = 0
+	Q.UP[floor] = 0
+	Q.DOWN[floor] = 0
+	Q.CMD[floor] = 0
 
 	switch floor {
 		case 0:

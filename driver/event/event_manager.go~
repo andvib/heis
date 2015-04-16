@@ -56,7 +56,7 @@ func StateMachine(){
 			}else if (NextFloor == -1){
 				println("Going to IDLE")
 				State = "IDLE"
-				Event = nil
+				Event = ""
 			}
 		}
 	}
