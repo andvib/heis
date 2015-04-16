@@ -54,7 +54,7 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	sendMessage("n", broadcast.Conn)
+	sendMessage("nw", broadcast.Conn)
 
 	go alive(conn)
 }
@@ -92,16 +92,17 @@ func whatToDo(m *message){
 		}
 
     }else if m.message == "as" {
+	println("Alive signal from slave")
         for i := 0 ; i < len(Connected) ; i++ {
             if m.from == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
             }
         }
-    }else if m.message == "n" {
+    }else if m.message == "nw" {
         println("New connection from: ", m.from)
         conn := connect(m.from)
         sendMessage("c", conn)
-    }else if m.message == "c" {
+    }else if m.message == "co" {
         println("Connect to: ", m.from)
         connect(m.from)
     }        
