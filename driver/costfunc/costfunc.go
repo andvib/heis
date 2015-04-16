@@ -6,7 +6,6 @@ import(/*".././network"*/
 	".././ko/"
 	".././event/")
 
-
 var backup ko.Queue
 var qCopy ko.Queue
 
@@ -35,9 +34,7 @@ func newOrderMaster(order driver.ButtonEvent){
 
 
 func Cost (/*orderedFloor int, orderedDir string*/){
-	
-	// Cost from 0 - 8
-
+	println("Cost()")
 	qCopy = ko.Q
 	var ordersInQ []int
 	moreOrders := true
@@ -48,6 +45,9 @@ func Cost (/*orderedFloor int, orderedDir string*/){
 			moreOrders = false
 		}else{
 			ordersInQ = append(ordersInQ,temp)
+			qCopy.UP[temp] = 0
+			qCopy.DOWN[temp] = 0
+			qCopy.CMD[temp] = 0
 		}
 	}
 	
@@ -58,6 +58,7 @@ func Cost (/*orderedFloor int, orderedDir string*/){
 
 
 func NextOrdered() (int){
+	println("NextOrdered()")
 	switch event.Dir {
 	case "UP" :
 		for i := event.Floor ; i < 4 ; i++ {

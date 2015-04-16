@@ -28,10 +28,11 @@ func main(){
 	go event.ReadEvent()
 
 	//go costfunc.ButtonHandle()
-
-	//select {}
-	for ; true ; {
+	time.Sleep(10000*time.Millisecond)
+	costfunc.Cost()
+	select {}
+	/*for ; true ; {
 		costfunc.Cost()
 		time.Sleep(1000*time.Millisecond)
-	}
+	}*/
 }

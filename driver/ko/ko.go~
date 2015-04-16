@@ -69,7 +69,6 @@ func addOrder(floor int, dir string) {
 		event.Floor = floor
 		ElevChan <- event
     }
-	costfunc.nextOrdered()
 }
 
 

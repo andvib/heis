@@ -33,24 +33,26 @@ func StateMachine(){
 		case "MOVING" :
 			if Event == "NEW_FLOOR" {
 				Floor = EventFloor
-				if (Floor == NextFloor){
+				if (Floor == NextFloor) && (driver.ELEV_get_floor_sensor_signal() != -1){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
 				}
 			}
 
 		case "DOOR_OPEN" :
-			println("DOOR OPEN")
-			driver.ELEV_set_door_open_lamp(1)
-			time.Sleep(3000*time.Millisecond)
-			driver.ELEV_set_door_open_lamp(0)
-			println("DOOR CLOSED")
-			ko.RemoveOrder(Floor)
-			NextFloor = ko.NextInQ(Dir,Floor)
+			if (driver.ELEV_get_floor_sensor_signal() != -1){
+				println("DOOR OPEN")
+				driver.ELEV_set_door_open_lamp(1)
+				time.Sleep(3000*time.Millisecond)
+				driver.ELEV_set_door_open_lamp(0)
+				println("DOOR CLOSED")
+				ko.RemoveOrder(Floor)
+				NextFloor = ko.NextInQ(Dir,Floor)
+			}			
 			
 			println("NEXT: ", NextFloor)
 			println("FLOOR: ", Floor)
-			if (Floor != NextFloor) && (NextFloor != -1){
+			if /*(Floor != NextFloor) &&*/ (NextFloor != -1){
 				State = "MOVING"
 				moveToFloor()
 			}else if (NextFloor == -1){
