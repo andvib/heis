@@ -75,7 +75,9 @@ func alive(conn *net.UDPConn){
 
 func whatToDo(m *message){
 	//Checks what to do with the new message
+    //println("Whattodo")
 	if m.message == "am"{
+        //println("Alive signal from master")
 		//Alive-signal from master
 		masterConn.LastSignal = time.Now()
 	    if masterConn.IP == ""{

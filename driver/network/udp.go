@@ -39,6 +39,7 @@ func receive(conn *net.UDPConn){
 	received := make([]byte,500)
 	for ; true ; {
 		_, _, _ = conn.ReadFromUDP(received)
+		//println("Received: ", string(received))
 		go receiveMessage(string(received))
 	}
 	conn.Close()
