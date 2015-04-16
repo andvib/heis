@@ -115,6 +115,8 @@ func timeout(){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()
+			time.Sleep(100*time.Millisecond)
+			
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {
@@ -142,6 +144,7 @@ func RemoveConn(index int) {
 
 
 func WhosMaster() {
+	println("Master timeout : WhosMaster()")
     me := true
     number := len(IP)
     own_1, _ := strconv.Atoi(string(IP[number-1]))

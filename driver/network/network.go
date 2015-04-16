@@ -115,6 +115,8 @@ func timeout(){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()
+			time.Sleep(500*time.Millisecond)
+			
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {
