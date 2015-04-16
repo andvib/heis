@@ -102,7 +102,7 @@ func whatToDo(m *message){
         println("New connection from: ", m.from)
         conn := connect(m.from)
         sendMessage("c", conn)
-    }else if m.message == "c0" {
+    }else if m.message == "co" {
         println("Connect to: ", m.from)
         connect(m.from)
     }        
