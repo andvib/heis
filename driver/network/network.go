@@ -99,6 +99,9 @@ func whatToDo(m *message){
             }
         }
     }else if m.message == "nw" {
+		if (m.from == IP){
+			return
+		}
         println("New connection from: ", m.from)
         conn := connect(m.from)
         sendMessage("co", conn)
@@ -150,6 +153,11 @@ func WhosMaster() {
     own_1, _ := strconv.Atoi(string(IP[number-1]))
     own_2, _ := strconv.Atoi(string(IP[number-2]))
 
+	for i := 0 ; i < len(Connected) ; i++ {
+		println("Connected[",i,"]",Connected[i].IP)
+	}
+
+
     for i := 0 ; i < len(Connected) ; i++ {
         other_1, _ := strconv.Atoi(string(Connected[i].IP[number-1]))
         other_2, _ := strconv.Atoi(string(Connected[i].IP[number-2]))
@@ -157,6 +165,7 @@ func WhosMaster() {
         if (other_1 <= own_1) {
             if (other_2 <= own_2) {
                 me = false
+				println("I am not the new master")
             }
         }
     }

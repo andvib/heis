@@ -99,6 +99,9 @@ func whatToDo(m *message){
             }
         }
     }else if m.message == "nw" {
+		if (m.from == IP){
+			return
+		}
         println("New connection from: ", m.from)
         conn := connect(m.from)
         sendMessage("co", conn)
@@ -115,7 +118,7 @@ func timeout(){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()
-			time.Sleep(100*time.Millisecond)
+			time.Sleep(500*time.Millisecond)
 			
 		}
 
@@ -149,6 +152,11 @@ func WhosMaster() {
     number := len(IP)
     own_1, _ := strconv.Atoi(string(IP[number-1]))
     own_2, _ := strconv.Atoi(string(IP[number-2]))
+
+	for i := 0 ; i < len(Connected) ; i++ {
+		println("Connected[",i,"]",Connected[i].IP)
+	}
+
 
     for i := 0 ; i < len(Connected) ; i++ {
         other_1, _ := strconv.Atoi(string(Connected[i].IP[number-1]))
