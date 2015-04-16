@@ -92,7 +92,7 @@ func whatToDo(m *message){
 		}
 
     }else if m.message == "as" {
-	println("Alive signal from slave")
+	//println("Alive signal from slave")
         for i := 0 ; i < len(Connected) ; i++ {
             if m.from == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
@@ -101,7 +101,7 @@ func whatToDo(m *message){
     }else if m.message == "nw" {
         println("New connection from: ", m.from)
         conn := connect(m.from)
-        sendMessage("c", conn)
+        sendMessage("co", conn)
     }else if m.message == "co" {
         println("Connect to: ", m.from)
         connect(m.from)

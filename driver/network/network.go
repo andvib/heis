@@ -92,7 +92,7 @@ func whatToDo(m *message){
 		}
 
     }else if m.message == "as" {
-	println("Alive signal from slave")
+	//println("Alive signal from slave")
         for i := 0 ; i < len(Connected) ; i++ {
             if m.from == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
@@ -142,6 +142,7 @@ func RemoveConn(index int) {
 
 
 func WhosMaster() {
+	println("Master timeout : WhosMaster()")
     me := true
     number := len(IP)
     own_1, _ := strconv.Atoi(string(IP[number-1]))
