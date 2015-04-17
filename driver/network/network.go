@@ -57,6 +57,7 @@ func NETWORK_init(){
 	SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
+	go updateMessages()
 }
 
 
@@ -143,6 +144,16 @@ func AppendConn(conn *net.UDPConn, ip string){
 
 func RemoveConn(index int) {
 	Connected = append(Connected[:index], Connected[index+1:]...)
+}
+
+
+func findConn(ip string) (*net.UDPConn){
+	for i := 0 ; i < len(Connected) ; i++ {
+		if Connected[i].IP == ip {
+			return Connected[i].Conn
+		}
+	}
+	return nil
 }
 
 
