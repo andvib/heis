@@ -7,7 +7,8 @@ import("net"
 	   "strings"
 	   "time"
        "strconv"
-	   /*"runtime"*/)
+	   /*"runtime"*/
+		".././ko/")
 
 
 type Connection struct{
@@ -17,8 +18,14 @@ type Connection struct{
 }
 
 
-var OrderReceived = make(chan *Message)
+type OrderCost struct{
+	Cost int
+	Conn *net.UDPConn
+}
 
+var OrderReceived = make(chan *Message)
+var CostReceived = make(chan OrderCost)
+var CalCost = make(chan int)
 
 var Connected []Connection
 var Master = false
@@ -118,13 +125,26 @@ func whatToDo(m *Message){
     }else if order == "no"{
 		//println("New order")
 		OrderReceived <- m
+	}else if order == "oc"{
+		println("Cost received")
+		var temp OrderCost
+		temp.Cost, _ = strconv.Atoi(string(m.Message[2]))
+		temp.Conn = findConn(m.From)
+		CostReceived <- temp
+	}else if order == "cc" {
+		cost, _ := strconv.Atoi(string(m.Message[2]))
+		CalCost <- cost
+	}else if order == "eo"{
+		floor, _ := strconv.Atoi(string(m.Message[2]))
+		println("Execute order: ",floor,string(m.Message[3]))
+		ko.AddOrder(floor, string(m.Message[3]))
 	}
 }
 
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(MasterConn.LastSignal) > 300*time.Millisecond) && (Master == false){
+		if (time.Since(MasterConn.LastSignal) > 500*time.Millisecond) && (Master == false){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()

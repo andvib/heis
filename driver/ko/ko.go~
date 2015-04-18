@@ -29,14 +29,14 @@ func ButtonHandle(){
 
 	for ; true ; {
 		buttonEvent = <- ButtonChan
-		addOrder(buttonEvent.Floor, buttonEvent.Button)
+		AddOrder(buttonEvent.Floor, buttonEvent.Button)
 		println("NY BESTILLING: ", buttonEvent.Floor, buttonEvent.Button)
 	}	
 
 }
 
 
-func addOrder(floor int, dir string) {
+func AddOrder(floor int, dir string) {
 	//dir is UP, DOWN or CMD
 	var event FloorEvent
     q := emptyQ()
