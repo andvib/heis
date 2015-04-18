@@ -8,14 +8,14 @@ import ("strings"
 		"net"
 		"time")
 
-type message struct{
-	from string
-	message string
+type Message struct{
+	From string
+	Message string
 }
 
 
 type sentMessage struct {
-	message *message
+	message *Message
 	sent time.Time
 }
 
@@ -24,26 +24,26 @@ var sentMessages []*sentMessage
 
 
 func SendMessage(text string, conn *net.UDPConn){
-	m := new(message)
-	m.from = IP
-	m.message = text
-	messageString := m.from + "+" + m.message
+	m := new(Message)
+	m.From = IP
+	m.Message = text
+	messageString := m.From + "+" + m.Message
 	send(messageString, conn)
 }
 
 func receiveMessage(mess string){
 	//println("Receive message")
-	m := new(message)
+	m := new(Message)
 	text := strings.Split(mess, "+")
-    m.from = text[0]
-    m.message = text[1]
-	m.message = m.message[:2]
+    m.From = text[0]
+    m.Message = text[1]
+	//m.message = m.message[:2]
     whatToDo(m)
 }
 
-func printMessage(m *message){
-	println("From: ", m.from)
-	println("Message: ", m.message)
+func printMessage(m *Message){
+	println("From: ", m.From)
+	println("Message: ", m.Message)
 }
 
 

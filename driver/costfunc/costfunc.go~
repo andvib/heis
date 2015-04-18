@@ -1,6 +1,6 @@
 package costfunc
 
-import(/*".././network"*/
+import(".././network"
 		".././heis/"
 		"strconv"
 		".././ko/"
@@ -15,15 +15,15 @@ func ButtonHandle(){
 	for ; true ; {
 		buttonEvent = <- driver.ButtonChan
 		//println("New order: ", buttonEvent.Floor, ", ",buttonEvent.Button)
-		newOrderMaster(buttonEvent)
+		newOrderSlave(buttonEvent)
 	}	
 }
 
 
 func newOrderSlave(order driver.ButtonEvent){
-	message := order.Button + strconv.Itoa(order.Floor)
+	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
-	//network.SendMessage(message, network.MasterConn.Conn)
+	network.SendMessage(message, network.MasterConn.Conn)
 }
 
 
@@ -61,7 +61,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 			cost = i
 		}else if (ordersInQ[i] < orderedFloor) && (ordersInQ[i] > orderedFloor) && (orderedDir == "UP") && (i < cost){
 			cost = i
-		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i] < orderedFloor) && (orderdDir == "DOWN") && (i < cost){
+		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i] < orderedFloor) && (orderedDir == "DOWN") && (i < cost){
 			cost = i
 		}
 	}
@@ -150,4 +150,10 @@ func receiveBackup(message string){
 		backup.DOWN[i] = letter2
 		backup.CMD[i] = letter3
 	}
+}
+
+func receiveOrder(message *network.Message){
+	floor := message.Message[3]
+	button := message.Message[2]
+	println("New order: ", button, floor)
 }

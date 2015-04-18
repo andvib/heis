@@ -57,7 +57,7 @@ func NETWORK_init(){
 	SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
-	go updateMessages()
+	//go updateMessages()
 }
 
 
@@ -74,42 +74,47 @@ func alive(conn *net.UDPConn){
 }
 
 
-func whatToDo(m *message){
+func whatToDo(m *Message){
 	//Checks what to do with the new message
     //println("Whattodo")
-	if m.message == "am"{
+
+	order := m.Message[:2]
+
+	if order == "am"{
         //println("Alive signal from master")
 		//Alive-signal from master
 		MasterConn.LastSignal = time.Now()
 	    if MasterConn.IP == ""{
 			//masterConn.Conn = connect(m.from)
-            MasterConn.IP = m.from
+            MasterConn.IP = m.From
 		    MasterConn.LastSignal = time.Now()
             for i := 0 ; i < len(Connected) ; i++ {
-                if m.from == Connected[i].IP {
+                if m.From == Connected[i].IP {
                     MasterConn.Conn = Connected[i].Conn
                 }
             }
 		}
 
-    }else if m.message == "as" {
+    }else if order == "as" {
 	//println("Alive signal from slave")
         for i := 0 ; i < len(Connected) ; i++ {
-            if m.from == Connected[i].IP {
+            if m.From == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
             }
         }
-    }else if m.message == "nw" {
-		if (m.from == IP){
+    }else if order == "nw" {
+		if (m.From == IP){
 			return
 		}
-        println("New connection from: ", m.from)
-        conn := connect(m.from)
+        println("New connection from: ", m.From)
+        conn := connect(m.From)
         SendMessage("co", conn)
-    }else if m.message == "co" {
-        println("Connect to: ", m.from)
-        connect(m.from)
-    }        
+    }else if order == "co" {
+        println("Connect to: ", m.From)
+        connect(m.From)
+    }else if order == "no"{
+		println("New order")
+	}
 }
 
 

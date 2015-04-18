@@ -5,7 +5,7 @@ import (."./driver/heis/"
 	"runtime"
 	"./driver/event/"
 	"./driver/ko/"
-	/*"./driver/costfunc/"*/
+	"./driver/costfunc/"
 	/*"time"*/
 	"./driver/network/")
 
@@ -21,7 +21,8 @@ func main(){
 	ELEV_set_motor_direction(0)
 	
     go FloorSensor()
-	go ButtonPush()
+	//go ButtonPush()
+	go costfunc.ButtonHandle()
 
 	event.State = "IDLE"
 	go event.StateMachine()
