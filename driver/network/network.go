@@ -8,7 +8,8 @@ import("net"
 	   "time"
        "strconv"
 	   /*"runtime"*/
-		".././ko/")
+		".././ko/"
+		".././heis/")
 
 
 type Connection struct{
@@ -25,7 +26,7 @@ type OrderCost struct{
 
 var OrderReceived = make(chan *Message)
 var CostReceived = make(chan OrderCost)
-var CalCost = make(chan int)
+var CalCost = make(chan driver.ButtonEvent)
 
 var Connected []Connection
 var Master = false
@@ -136,9 +137,11 @@ func whatToDo(m *Message){
 		temp.Conn = findConn(m.From)
 		CostReceived <- temp
 	}else if order == "cc" {
+		var temp driver.ButtonEvent
 		println("Calculate cost")
-		cost, _ := strconv.Atoi(string(m.Message[2]))
-		CalCost <- cost
+		temp.Floor, _ = strconv.Atoi(string(m.Message[2]))
+		temp.Button = string(m.Message[3])
+		CalCost <- temp
 	}else if order == "eo"{
 		floor, _ := strconv.Atoi(string(m.Message[2]))
 		println("Execute order: ",floor,string(m.Message[3]))
