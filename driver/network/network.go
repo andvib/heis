@@ -17,6 +17,9 @@ type Connection struct{
 }
 
 
+var OrderReceived = make(chan *Message)
+
+
 var Connected []Connection
 var Master = false
 var IP string
@@ -114,6 +117,7 @@ func whatToDo(m *Message){
         connect(m.From)
     }else if order == "no"{
 		//println("New order")
+		OrderReceived <- m
 	}
 }
 

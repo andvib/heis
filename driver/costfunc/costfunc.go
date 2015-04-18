@@ -155,8 +155,11 @@ func receiveBackup(message string){
 	}
 }
 
-func receiveOrder(message *network.Message){
+func ReceiveOrder(){
+	for  {
+	message := <- network.OrderReceived
 	floor := message.Message[3]
 	button := message.Message[2]
 	println("New order: ", button, floor)
+	}
 }

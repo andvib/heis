@@ -23,6 +23,7 @@ func main(){
     go FloorSensor()
 	go ButtonPush()
 	go costfunc.ButtonHandle()
+	go costfunc.ReceiveOrder()
 
 	event.State = "IDLE"
 	go event.StateMachine()
