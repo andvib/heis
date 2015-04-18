@@ -47,7 +47,7 @@ func printMessage(m *message){
 }
 
 
-func addMessage(message *message) {
+/*func addMessage(message *message) {
 	var temp sentMessage
 	temp.message = message
 	temp.sent = time.Now()
@@ -79,4 +79,4 @@ func updateMessages(){
 		}
 		time.Sleep(1000*time.Millisecond)
 	}
-}
+}*/

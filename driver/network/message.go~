@@ -77,5 +77,6 @@ func updateMessages(){
 				removeMessage(i)
 			}
 		}
+		time.Sleep(1000*time.Millisecond)
 	}
 }

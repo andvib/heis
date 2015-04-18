@@ -57,7 +57,7 @@ func NETWORK_init(){
 	SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
-	go updateMessages()
+	//go updateMessages()
 }
 
 

@@ -5,8 +5,9 @@ import (."./driver/heis/"
 	"runtime"
 	"./driver/event/"
 	"./driver/ko/"
-	"./driver/costfunc/"
-	"time")
+	/*"./driver/costfunc/"*/
+	/*"time"*/
+	"./driver/network/")
 
 func main(){
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -14,6 +15,8 @@ func main(){
 	if ELEV_init() == 0{
 		println("Ikke initialisert!")
 	}
+
+	network.NETWORK_init()
 
 	ELEV_set_motor_direction(0)
 	
@@ -28,8 +31,7 @@ func main(){
 	go event.ReadEvent()
 
 	//go costfunc.ButtonHandle()
-	time.Sleep(10000*time.Millisecond)
-	costfunc.Cost()
+
 	select {}
 	/*for ; true ; {
 		costfunc.Cost()

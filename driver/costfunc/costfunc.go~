@@ -127,19 +127,15 @@ func addToBackup(order driver.ButtonEvent){
 
 func sendBackup(){
 	var message string
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.UP[i])
 	}
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.DOWN[i])
 	}
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.CMD[i])
 	}
-	
 	println(message)
 }
 
