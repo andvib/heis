@@ -26,7 +26,7 @@ func newOrderSlave(order driver.ButtonEvent){
 	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
 	//network.SendMessage(message, network.MasterConn.Conn)
-	network.SendMessage(message, network.Broadcast)
+	network.SendMessage(message, network.Broadcast.Conn)
 }
 
 

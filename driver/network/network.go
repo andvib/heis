@@ -113,7 +113,7 @@ func whatToDo(m *Message){
         println("Connect to: ", m.From)
         connect(m.From)
     }else if order == "no"{
-		println("New order")
+		//println("New order")
 	}
 }
 

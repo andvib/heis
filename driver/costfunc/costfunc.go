@@ -156,7 +156,7 @@ func receiveBackup(message string){
 }
 
 func receiveOrder(message *network.Message){
-	//floor := message.Message[3]
-	//button := message.Message[2]
-	//println("New order: ", button, floor)
+	floor := message.Message[3]
+	button := message.Message[2]
+	println("New order: ", button, floor)
 }
