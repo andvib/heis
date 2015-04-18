@@ -83,14 +83,15 @@ func CostChan(){
 }
 
 
-func slaveCalculate(){
+func SlaveCalculate(){
 	var temp driver.ButtonEvent
 	for ;; {
-		temp = <- CalCost
+		temp = <- network.CalCost
+		println("Calculating cost")
 		//floor, _ := strconv.Atoi(string(m.Message[2]))
 		cost := Cost(temp.Floor,temp.Button)
 		message := "oc" + strconv.Itoa(cost)
-		network.SendMessage(message,network.MasterConn.Conn)
+		network.SendMessage(message,network.Broadcast.Conn)
 	}
 }
 
@@ -128,9 +129,10 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 
-	if (ko.EmptyQ() == 1) {
+	/*if (ko.EmptyQ() == 1) {
+		println("Empty Q")
 		cost = 0
-	}
+	}*/
 
 	println("Cost: ", cost)
 	return cost	

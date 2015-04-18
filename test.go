@@ -25,6 +25,7 @@ func main(){
 	go costfunc.ButtonHandle()
 	go costfunc.ReceiveOrder()
 	go costfunc.CostChan()
+	go costfunc.SlaveCalculate()
 
 	event.State = "IDLE"
 	go event.StateMachine()

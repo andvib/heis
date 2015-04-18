@@ -2,9 +2,9 @@ package ko
 
 import (.".././heis/")
 
-var Q_up [4]int
+/*var Q_up [4]int
 var Q_down [4]int
-var Q_cmd [4]int
+var Q_cmd [4]int*/
 
 type Queue struct {
 	UP [4]int
@@ -74,10 +74,11 @@ func AddOrder(floor int, dir string) {
 
 func EmptyQ()(int){
 	for i := 0 ; i < 4; i++{
-        if (Q_up[i] == 1) || (Q_down[i] == 1) || (Q_cmd[i] == 1){
+        if (Q.UP[i] == 1) || (Q.DOWN[i] == 1) || (Q.CMD[i] == 1){
             return 0
         }
 	}
+	println("Q is empty")
     return 1
 }
 
