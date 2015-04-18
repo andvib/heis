@@ -159,7 +159,7 @@ func ReceiveOrder(){
 	for  {
 	message := <- network.OrderReceived
 	floor, _ := strconv.Atoi(string(message.Message[3]))
-	button, _ := strconv.Atoi(string(message.Message[2]))
+	button := string(message.Message[2])
 	println("New order: ", button, floor)
 	}
 }

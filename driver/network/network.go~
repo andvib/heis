@@ -17,7 +17,7 @@ type Connection struct{
 }
 
 
-var OrderReceived = make(chan Message)
+var OrderReceived = make(chan *Message)
 
 
 var Connected []Connection
@@ -124,7 +124,7 @@ func whatToDo(m *Message){
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(MasterConn.LastSignal) > 200*time.Millisecond) && (Master == false){
+		if (time.Since(MasterConn.LastSignal) > 300*time.Millisecond) && (Master == false){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()

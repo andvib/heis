@@ -158,8 +158,8 @@ func receiveBackup(message string){
 func ReceiveOrder(){
 	for  {
 	message := <- network.OrderReceived
-	floor := strconv.Atoi(string(message.Message[3]))
-	button := strconv.Atoi(string(message.Message[2]))
+	floor, _ := strconv.Atoi(string(message.Message[3]))
+	button, _ := string(message.Message[2])
 	println("New order: ", button, floor)
 	}
 }
