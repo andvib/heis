@@ -131,7 +131,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 	if (ko.EmptyQ() == 1) {
 		println("Empty Q")
-		cost = 0
+		cost = 1
 	}
 
 	println("Cost: ", cost)
