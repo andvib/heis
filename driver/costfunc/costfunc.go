@@ -1,10 +1,10 @@
 package costfunc
 
 import(/*".././network"*/
-	".././heis/"
-	"strconv"
-	".././ko/"
-	".././event/")
+		".././heis/"
+		"strconv"
+		".././ko/"
+		".././event/")
 
 var backup ko.Queue
 var qCopy ko.Queue
@@ -33,11 +33,12 @@ func newOrderMaster(order driver.ButtonEvent){
 }
 
 
-func Cost (/*orderedFloor int, orderedDir string*/){
+func Cost (orderedFloor int, orderedDir string) (int){
 	println("Cost()")
 	qCopy = ko.Q
 	var ordersInQ []int
 	moreOrders := true
+	cost := 100
 
 	for ; moreOrders ; {
 		temp := NextOrdered()
@@ -51,9 +52,21 @@ func Cost (/*orderedFloor int, orderedDir string*/){
 		}
 	}
 	
-	for i := 0; i < len(ordersInQ) ; i++ {
+	/*for i := 0; i < len(ordersInQ) ; i++ {
 		println(ordersInQ[i])
+	}*/
+
+	for i := 0 ; i < len(ordersInQ) - 1 ; i++ {
+		if (ordersInQ[i] == orderedFloor) && (i < cost){
+			cost = i
+		}else if (ordersInQ[i] < orderedFloor) && (ordersInQ[i] > orderedFloor) && (orderedDir == "UP") && (i < cost){
+			cost = i
+		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i] < orderedFloor) && (orderdDir == "DOWN") && (i < cost){
+			cost = i
+		}
 	}
+
+	return cost	
 }
 
 
@@ -114,19 +127,15 @@ func addToBackup(order driver.ButtonEvent){
 
 func sendBackup(){
 	var message string
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.UP[i])
 	}
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.DOWN[i])
 	}
-
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.CMD[i])
 	}
-	
 	println(message)
 }
 
