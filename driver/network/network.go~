@@ -132,6 +132,7 @@ func whatToDo(m *Message){
 		temp.Conn = findConn(m.From)
 		CostReceived <- temp
 	}else if order == "cc" {
+		println("Calculate cost")
 		cost, _ := strconv.Atoi(string(m.Message[2]))
 		CalCost <- cost
 	}else if order == "eo"{

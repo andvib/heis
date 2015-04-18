@@ -88,6 +88,10 @@ func whatToDo(m *Message){
 	//Checks what to do with the new message
     //println("Whattodo")
 
+	if m.From == IP{
+		return
+	}
+
 	order := m.Message[:2]
 
 	if order == "am"{
