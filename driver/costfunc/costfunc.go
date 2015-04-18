@@ -83,11 +83,15 @@ func CostChan(){
 }
 
 
-func slaveCalculate(m *network.Message){
-	floor, _ := strconv.Atoi(string(m.Message[2]))
-	cost := Cost(floor,string(m.Message[3]))
-	message := "oc" + strconv.Itoa(cost)
-	network.SendMessage(message,network.MasterConn.Conn)
+func slaveCalculate(){
+	var temp driver.ButtonEvent
+	for ;; {
+		temp = <- network.CalCost
+		//floor, _ := strconv.Atoi(string(m.Message[2]))
+		cost := Cost(temp.Floor,temp.Button)
+		message := "oc" + strconv.Itoa(cost)
+		network.SendMessage(message,network.MasterConn.Conn)
+	}
 }
 
 

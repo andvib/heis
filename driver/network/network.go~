@@ -141,7 +141,7 @@ func whatToDo(m *Message){
 		println("Calculate cost")
 		temp.Floor, _ = strconv.Atoi(string(m.Message[2]))
 		temp.Button = string(m.Message[3])
-		CalCost <- 
+		CalCost <- temp
 	}else if order == "eo"{
 		floor, _ := strconv.Atoi(string(m.Message[2]))
 		println("Execute order: ",floor,string(m.Message[3]))
