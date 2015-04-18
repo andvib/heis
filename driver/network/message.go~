@@ -29,11 +29,12 @@ func SendMessage(text string, conn *net.UDPConn){
 	m.Message = text
 	messageString := m.From + "+" + m.Message
 	send(messageString, conn)
+	println("Message sent")
 }
 
 func receiveMessage(mess string){
 	//println("Receive message")
-	m := new(message)
+	m := new(Message)
 	text := strings.Split(mess, "+")
     m.From = text[0]
     m.Message = text[1]

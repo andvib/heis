@@ -21,14 +21,14 @@ func main(){
 	ELEV_set_motor_direction(0)
 	
     go FloorSensor()
-	//go ButtonPush()
+	go ButtonPush()
 	go costfunc.ButtonHandle()
 
 	event.State = "IDLE"
 	go event.StateMachine()
 
 	ko.Q_init()
-	go ko.ButtonHandle()
+	//go ko.ButtonHandle()
 	go event.ReadEvent()
 
 	//go costfunc.ButtonHandle()

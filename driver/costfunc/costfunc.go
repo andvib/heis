@@ -15,15 +15,18 @@ func ButtonHandle(){
 	for ; true ; {
 		buttonEvent = <- driver.ButtonChan
 		//println("New order: ", buttonEvent.Floor, ", ",buttonEvent.Button)
+		println("NewOrderCOSTFUNC")		
 		newOrderSlave(buttonEvent)
 	}	
 }
 
 
 func newOrderSlave(order driver.ButtonEvent){
+	println("NewOrderSlave")
 	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
-	network.SendMessage(message, network.MasterConn.Conn)
+	//network.SendMessage(message, network.MasterConn.Conn)
+	network.SendMessage(message, network.Broadcast.Conn)
 }
 
 
@@ -153,7 +156,7 @@ func receiveBackup(message string){
 }
 
 func receiveOrder(message *network.Message){
-	floor := message.Message[3]
-	button := message.Message[2]
-	println("New order: ", button, floor)
+	//floor := message.Message[3]
+	//button := message.Message[2]
+	//println("New order: ", button, floor)
 }
