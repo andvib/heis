@@ -17,8 +17,6 @@ func ButtonHandle(){
 
 	for ; true ; {
 		buttonEvent = <- driver.ButtonChan
-		//println("New order: ", buttonEvent.Floor, ", ",buttonEvent.Button)
-		//println("NewOrderCOSTFUNC")
 		if network.Master {	
 			newOrderMaster(buttonEvent)
 		}else{
@@ -34,7 +32,6 @@ func newOrderSlave(order driver.ButtonEvent){
 	println(message)
 	network.SendMessage(message, network.Broadcast.Conn)
 	println("New order message sent")
-	//network.SendMessage(message, network.Broadcast.Conn)
 }
 
 
@@ -121,13 +118,15 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 	for i := 0 ; i < len(ordersInQ) - 1 ; i++ {
 		if (ordersInQ[i] == orderedFloor) && (i < cost){
-			cost = i
+			cost = 2*i  //0?
 		}else if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "UP") && (i < cost){
-			cost = i
+			cost = 2*i
 		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i+1] < orderedFloor) && (orderedDir == "DOWN") && (i < cost){
-			cost = i
+			cost = 2*i
 		}
 	}
+
+	cost = cost + event.Floor
 
 	if (ko.EmptyQ() == 1) {
 		println("Empty Q")
@@ -195,7 +194,7 @@ func addToBackup(order driver.ButtonEvent){
 
 
 func sendBackup(){
-	var message string
+	message := "ba"
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.UP[i])
 	}
@@ -206,6 +205,7 @@ func sendBackup(){
 		message = message + strconv.Itoa(backup.CMD[i])
 	}
 	//println(message)
+	network.SendMessage(message, network.Broadcast.Conn)
 }
 
 

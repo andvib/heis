@@ -87,20 +87,15 @@ func alive(conn *net.UDPConn){
 
 func whatToDo(m *Message){
 	//Checks what to do with the new message
-    //println("Whattodo")
-
-	if m.From == IP{
-		return
-	}
-
 	order := m.Message[:2]
 
 	if order == "am"{
-        //println("Alive signal from master")
 		//Alive-signal from master
 		MasterConn.LastSignal = time.Now()
-	    if MasterConn.IP == ""{
-			//masterConn.Conn = connect(m.from)
+	    if (MasterConn.IP == "") || (MasterConn.IP != IP){
+			if Master {
+				Master = false
+			}
             MasterConn.IP = m.From
 		    MasterConn.LastSignal = time.Now()
             for i := 0 ; i < len(Connected) ; i++ {
@@ -111,7 +106,6 @@ func whatToDo(m *Message){
 		}
 
     }else if order == "as" {
-	//println("Alive signal from slave")
         for i := 0 ; i < len(Connected) ; i++ {
             if m.From == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
@@ -163,6 +157,7 @@ func timeout(){
 		for i := 0 ; i < len(Connected) ; i++ {
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
                 println("Slave timeout: ", Connected[i].IP)
+				net.Close(Connected[i].Conn)
 				RemoveConn(i)
 			}
 		}

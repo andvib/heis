@@ -37,13 +37,17 @@ func receiveMessage(mess string){
 	text := strings.Split(mess, "+")
     m.From = text[0]
     m.Message = text[1]
-	//m.message = m.message[:2]
-    whatToDo(m)
+	
+	if m.From != IP{
+		whatToDo(m)
+	}
 }
 
 func printMessage(m *Message){
+	println("")
 	println("From: ", m.From)
 	println("Message: ", m.Message)
+	println("")
 }
 
 
