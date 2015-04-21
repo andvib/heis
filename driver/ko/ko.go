@@ -124,15 +124,16 @@ func RemoveOrder(floor int) {
 	Q.DOWN[floor] = 0
 	Q.CMD[floor] = 0
 
+	mess := "rm" + strconv.Itoa(floor)
+
 	if (network.Master){
 		var temp network.Message
 		temp.From = network.IP
-		temp.Message = "rm" + strconv.Itoa(floor)
+		temp.Message = mess
 		network.NewMessage <- &temp
-	}else{
-		temp := "rm" + strconv.Itoa(floor)
-		network.SendMessage(temp, network.Broadcast.Conn)
 	}
+
+	network.SendMessage(mess, network.Broadcast.Conn)
 
 	switch floor {
 		case 0:

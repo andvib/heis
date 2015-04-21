@@ -129,7 +129,6 @@ func slaveCalculate(order driver.ButtonEvent){
 
 func Cost (orderedFloor int, orderedDir string) (int){
 	println(orderedDir)
-	println("Cost()")
 	qCopy = ko.Q
 	var ordersInQ []int
 	moreOrders := true
@@ -153,23 +152,19 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 
 	if (ko.EmptyQ() == 1) {
-		println("Empty Q")
 		cost = 1
 	}
 
 	for i := 0 ; i < len(ordersInQ) ; i++ {
 		if (ordersInQ[i] == orderedFloor){
-			println("Etasje allerede bestilt!")
 			cost = 0
 		}
 	}
 	
 	if (len(ordersInQ) != 0){
 		if (orderedFloor < ordersInQ[0]) && (orderedDir == "U") && (event.Floor < orderedFloor){
-			println("Forst i koen, opp")
 			cost = 0
 		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "D") && (event.Floor > orderedFloor){
-			println("Forst i koen, ned")
 			cost = 0
 		}
 	}
@@ -187,7 +182,6 @@ func Cost (orderedFloor int, orderedDir string) (int){
 	}
 
 	if ((len(ordersInQ) + 1)*2 < cost){
-		println("Last in Q")
 		cost = (len(ordersInQ)+1)*2
 	}
 	
@@ -313,7 +307,6 @@ func RemoveBUOrder(m *Message){
 
 func lightsOff(m int){
 	floor,_ := strconv.Atoi(string(m))
-	println(floor)
 	driver.ELEV_set_button_lamp(0,floor,0)
 	driver.ELEV_set_button_lamp(1,floor,0)
 }
