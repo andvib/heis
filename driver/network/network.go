@@ -68,7 +68,7 @@ func alive(conn *net.UDPConn){
     		time.Sleep(100*time.Millisecond)
 		}else{
 			SendMessage("as", conn)
-			time.Sleep(1000*time.Millisecond)
+			time.Sleep(500*time.Millisecond)
 		}
 	}
 }
@@ -81,10 +81,10 @@ func whatToDo(m *Message){
 	if order == "am"{
 		//Alive-signal from master
 		MasterConn.LastSignal = time.Now()
-	    if (MasterConn.IP == "") || (MasterConn.IP != m.From){
-			if Master {
-				Master = false
-			}
+		//println(Master)
+	    if /*(MasterConn.IP != m.From)*/(Master){
+			println("Other master")
+			Master = false
             MasterConn.IP = m.From
 		    MasterConn.LastSignal = time.Now()
             for i := 0 ; i < len(Connected) ; i++ {
@@ -107,7 +107,7 @@ func whatToDo(m *Message){
         println("New connection from: ", m.From)
         conn := connect(m.From)
         SendMessage("co", conn)
-    }else if order == "co" {
+    }else if order == "co" {	
         println("Connect to: ", m.From)
         connect(m.From)
     }else{
@@ -118,11 +118,11 @@ func whatToDo(m *Message){
 
 func timeout(){
 	for ; true ; {		
-		if (time.Since(MasterConn.LastSignal) > 500*time.Millisecond) && (Master == false){
+		if (time.Since(MasterConn.LastSignal) > 900*time.Millisecond) && (Master == false){
 			//No master on the network
             println("Master timeout")
 			WhosMaster()
-			time.Sleep(500*time.Millisecond)
+			//time.Sleep(500*time.Millisecond)
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {

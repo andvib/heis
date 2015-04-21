@@ -182,7 +182,6 @@ func Cost (orderedFloor int, orderedDir string) (int){
 	}
 
 	if ((len(ordersInQ) + 1)*2 < cost){
-		println("Last in Q")
 		cost = (len(ordersInQ)+1)*2
 	}
 	
