@@ -6,8 +6,7 @@ package network
 import("net"
 	   "strings"
 	   "time"
-       "strconv"
-		/*".././heis/"*/)
+       "strconv")
 
 
 type Connection struct{
@@ -168,9 +167,9 @@ func WhosMaster() {
     own_1, _ := strconv.Atoi(string(IP[number-1]))
     own_2, _ := strconv.Atoi(string(IP[number-2]))
 
-	for i := 0 ; i < len(Connected) ; i++ {
+	/*for i := 0 ; i < len(Connected) ; i++ {
 		println("Connected[",i,"]",Connected[i].IP)
-	}
+	}*/
 
 
     for i := 0 ; i < len(Connected) ; i++ {
@@ -192,7 +191,7 @@ func WhosMaster() {
 		var temp Message
 		temp.From = IP
 		temp.Message = "nm"
-		NewMessage <- temp
+		NewMessage <- &temp
     }
 
     MasterConn.IP = ""
