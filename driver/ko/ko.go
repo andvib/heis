@@ -2,10 +2,6 @@ package ko
 
 import (.".././heis/")
 
-/*var Q_up [4]int
-var Q_down [4]int
-var Q_cmd [4]int*/
-
 type Queue struct {
 	UP [4]int
 	DOWN [4]int
@@ -37,7 +33,7 @@ func ButtonHandle(){
 
 
 func AddOrder(floor int, dir string) {
-	//dir is UP, DOWN or CMD
+	//dir is U, D or C
 	var event FloorEvent
     q := EmptyQ()
 
@@ -84,8 +80,11 @@ func EmptyQ()(int){
 
 
 func NextInQ(dir string, floor int) (int) {
+	/*if(floor == -1){
+		return -1
+	}*/
 	switch dir {
-	case "UP" :
+	case "U" :
 		for i := floor ; i < 4 ; i++ {
 			if (Q.UP[i] == 1) || (Q.CMD[i] == 1) {
 				return i
@@ -98,7 +97,7 @@ func NextInQ(dir string, floor int) (int) {
 			}
 		}
 
-	case "DOWN" :
+	case "D" :
 		for i := floor ; i > -1 ; i-- {
 			if (Q.DOWN[i] == 1) || (Q.CMD[i] == 1) {
 				return i

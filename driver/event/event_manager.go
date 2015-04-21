@@ -32,16 +32,20 @@ func StateMachine(){
 
 		case "MOVING" :
 			if Event == "NEW_FLOOR" {
-				Floor = EventFloor
-				if (Floor == NextFloor) && (driver.ELEV_get_floor_sensor_signal() != -1){
+				temp := driver.ELEV_get_floor_sensor_signal()
+				if (temp != -1){
+					Floor = temp
+				}
+				if (driver.ELEV_get_floor_sensor_signal() == NextFloor){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
+					//println("EVENT:DOOR_OPEN")
 				}
 			}
 
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
-				//println("DOOR OPEN")
+				//println("DOOR OPEN ",Floor)
 				driver.ELEV_set_door_open_lamp(1)
 				time.Sleep(3000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
@@ -50,9 +54,9 @@ func StateMachine(){
 				NextFloor = ko.NextInQ(Dir,Floor)
 			}			
 			
-			println("NEXT: ", NextFloor)
-			println("FLOOR: ", Floor)
-			if /*(Floor != NextFloor) &&*/ (NextFloor != -1){
+			//println("NEXT: ", NextFloor)
+			//println("FLOOR: ", Floor)
+			if (NextFloor != -1){
 				State = "MOVING"
 				moveToFloor()
 			}else if (NextFloor == -1){
@@ -84,17 +88,17 @@ func moveToFloor() {
 	if (Floor < NextFloor) {
 		//println("MOVETOFLOOR:UP")
 		driver.ELEV_set_motor_direction(1)
-		Dir = "UP"
+		Dir = "U"
 	}else if (Floor > NextFloor){
 		//println("Moving Down")
 		driver.ELEV_set_motor_direction(-1)
-		Dir = "DOWN"
+		Dir = "D"
 	}
 }
 
 func startUp() {
 	println("STARTUP")
-	Dir = "UP"
+	Dir = "U"
 	driver.ELEV_set_motor_direction(-1)
 	for ; driver.ELEV_get_floor_sensor_signal() == -1 ; {
 	}
