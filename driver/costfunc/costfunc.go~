@@ -52,13 +52,13 @@ func newOrderMaster(order driver.ButtonEvent){
 	
 	/*for o := range network.CostReceived{
 		println("Something on the channel")
-		if o.Cost < bestOrder.Cost {
-			bestOrder.Cost = o.Cost
-			bestOrder.Conn = o.Conn
+		if o.Cost < BestOrder.Cost {
+			BestOrder.Cost = o.Cost
+			BestOrder.Conn = o.Conn
 		}
 	}*/
 
-	if Cost(order.Floor,order.Button) < BestOrder.Cost{
+	if Cost(order.Floor,order.Button) <= BestOrder.Cost{
 		println("Takes the order itself")
 		ko.AddOrder(order.Floor,order.Button)
 	}else{
@@ -126,7 +126,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 
-	cost = cost + event.Floor
+	//cost = cost + event.Floor
 
 	if (ko.EmptyQ() == 1) {
 		println("Empty Q")
