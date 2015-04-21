@@ -116,6 +116,12 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		println(ordersInQ[i])
 	}*/
 
+
+	if (ko.EmptyQ() == 1) {
+		println("Empty Q")
+		cost = 1
+	}
+
 	for i := 0 ; i < len(ordersInQ) - 1 ; i++ {
 		if (ordersInQ[i] == orderedFloor) && (i < cost){
 			cost = 0
@@ -137,10 +143,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 	}
 
 
-	if (ko.EmptyQ() == 1) {
-		println("Empty Q")
-		cost = 1
-	}
+	
 
 	println("Cost: ", cost)
 	return cost	
