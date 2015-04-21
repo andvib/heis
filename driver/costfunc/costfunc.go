@@ -94,6 +94,7 @@ func SlaveCalculate(){
 
 
 func Cost (orderedFloor int, orderedDir string) (int){
+	println(orderedDir)
 	println("Cost()")
 	qCopy = ko.Q
 	var ordersInQ []int
@@ -125,17 +126,17 @@ func Cost (orderedFloor int, orderedDir string) (int){
 	for i := 0 ; i < len(ordersInQ) ; i++ {
 		if (ordersInQ[i] == orderedFloor){
 			cost = 0
-		}else if (orderedFloor < ordersInQ[0]) && (orderedDir == "UP") && (event.Floor < orderedFloor){
+		}else if (orderedFloor < ordersInQ[0]) && (orderedDir == "U") && (event.Floor < orderedFloor){
 			cost = 0
-		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "DOWN") && (event.Floor > orderedFloor){
+		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "D") && (event.Floor > orderedFloor){
 			cost = 0
 		}
 	}
 	
 	for i := 0 ; i < len(ordersInQ) -1 ; i++{
-		if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "UP") && (2*(i+1) < cost){
+		if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "U") && (2*(i+1) < cost){
 			cost = 2*(i+1)
-		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i+1] < orderedFloor) && (orderedDir == "DOWN") && (2*(i+1) < cost){
+		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i+1] < orderedFloor) && (orderedDir == "D") && (2*(i+1) < cost){
 			cost = 2*(i+1)
 		}
 	}
