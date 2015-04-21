@@ -132,6 +132,11 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 	//cost = cost + event.Floor
 
+	if (event.Floor == orderedFloor){
+		cost = 0
+	}
+
+
 	if (ko.EmptyQ() == 1) {
 		println("Empty Q")
 		cost = 1
