@@ -112,9 +112,9 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 	
-	/*for i := 0; i < len(ordersInQ) ; i++ {
+	for i := 0; i < len(ordersInQ) ; i++ {
 		println(ordersInQ[i])
-	}*/
+	}
 
 
 	if (ko.EmptyQ() == 1) {
@@ -151,7 +151,6 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 
 func NextOrdered() (int){
-	println("NextOrdered()")
 	switch event.Dir {
 	case "UP" :
 		for i := event.Floor ; i < 4 ; i++ {
