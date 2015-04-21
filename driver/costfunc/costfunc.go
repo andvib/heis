@@ -122,14 +122,18 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		cost = 1
 	}
 
-	for i := 0 ; i < len(ordersInQ) - 1 ; i++ {
+	for i := 0 ; i < len(ordersInQ) ; i++ {
 		if (ordersInQ[i] == orderedFloor){
 			cost = 0
 		}else if (orderedFloor < ordersInQ[0]) && (orderedDir == "UP") && (event.Floor < orderedFloor){
 			cost = 0
 		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "DOWN") && (event.Floor > orderedFloor){
 			cost = 0
-		}else if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "UP") && (2*i < cost){
+		}
+	}
+	
+	for i := 0 ; i < len(ordersInQ) -1 ; i++{
+		if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "UP") && (2*i < cost){
 			cost = 2*i
 		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i+1] < orderedFloor) && (orderedDir == "DOWN") && (2*i < cost){
 			cost = 2*i

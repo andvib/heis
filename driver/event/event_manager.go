@@ -77,16 +77,16 @@ func ReadEvent() {
 
 func moveToFloor() {
 	if (NextFloor == -1) {
-		println("Move to Floor: No order")
+		//println("Move to Floor: No order")
 		return
 	}
 
 	if (Floor < NextFloor) {
-		println("MOVETOFLOOR:UP")
+		//println("MOVETOFLOOR:UP")
 		driver.ELEV_set_motor_direction(1)
 		Dir = "UP"
 	}else if (Floor > NextFloor){
-		println("Moving Down")
+		//println("Moving Down")
 		driver.ELEV_set_motor_direction(-1)
 		Dir = "DOWN"
 	}

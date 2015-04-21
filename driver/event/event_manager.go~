@@ -19,14 +19,14 @@ func StateMachine(){
 	
 		case "IDLE" :
 			if Event == "NEW_ORDER"{
-				println("IDLE:NEW_ORDER")
+				//println("IDLE:NEW_ORDER")
 				NextFloor = ko.NextInQ(Dir,Floor)
 				if NextFloor == Floor {
 					State = "DOOR_OPEN"
 				}else{
 					State = "MOVING"
 					moveToFloor()
-					println("MOVING")
+				//	println("MOVING")
 				}
 			}
 
@@ -41,11 +41,11 @@ func StateMachine(){
 
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
-				println("DOOR OPEN")
+				//println("DOOR OPEN")
 				driver.ELEV_set_door_open_lamp(1)
 				time.Sleep(3000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
-				println("DOOR CLOSED")
+				//println("DOOR CLOSED")
 				ko.RemoveOrder(Floor)
 				NextFloor = ko.NextInQ(Dir,Floor)
 			}			
@@ -56,7 +56,7 @@ func StateMachine(){
 				State = "MOVING"
 				moveToFloor()
 			}else if (NextFloor == -1){
-				println("Going to IDLE")
+				//println("Going to IDLE")
 				State = "IDLE"
 				Event = ""
 			}
