@@ -151,13 +151,12 @@ func timeout(){
             println("Master timeout")
 			WhosMaster()
 			time.Sleep(500*time.Millisecond)
-			
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
                 println("Slave timeout: ", Connected[i].IP)
-				net.Close(Connected[i].Conn)
+				Connected[i].Conn.Close()
 				RemoveConn(i)
 			}
 		}
@@ -219,5 +218,6 @@ func WhosMaster() {
     }
 
     MasterConn.IP = ""
-    MasterConn.Conn = nil
+    //MasterConn.Conn.Close()
+	MasterConn.Conn = nil
 }

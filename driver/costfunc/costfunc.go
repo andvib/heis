@@ -48,7 +48,7 @@ func newOrderMaster(order driver.ButtonEvent){
 	timer := time.Now()
 	//var bestOrder network.OrderCost
 	BestOrder.Cost = 1000
-	for ; (time.Since(timer) < 500*time.Millisecond) ; {}
+	for ; (time.Since(timer) < 200*time.Millisecond) ; {}
 	
 	/*for o := range network.CostReceived{
 		println("Something on the channel")
@@ -126,7 +126,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 
-	cost = cost + event.Floor
+	//cost = cost + event.Floor
 
 	if (ko.EmptyQ() == 1) {
 		println("Empty Q")
