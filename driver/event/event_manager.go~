@@ -2,7 +2,8 @@ package event
 
 import(".././heis/"
 		"time"
-		".././ko/")
+		".././ko/"
+		".././network/")
 
 var State string //IDLE, MOVING, DOOR_OPEN
 var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
@@ -36,7 +37,7 @@ func StateMachine(){
 				if (temp != -1){
 					Floor = temp
 				}
-				if (driver.ELEV_get_floor_sensor_signal() == NextFloor) && (driver.ELEV_get_floor_sensor_signal() != -1){
+				if (driver.ELEV_get_floor_sensor_signal() == NextFloor){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
 					//println("EVENT:DOOR_OPEN")

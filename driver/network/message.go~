@@ -47,7 +47,7 @@ func printMessage(m *Message){
 	println("")
 	println("From: ", m.From)
 	println("Message: ", m.Message)
-	
+	println("")
 }
 
 

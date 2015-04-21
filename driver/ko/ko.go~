@@ -1,6 +1,7 @@
 package ko
 
-import (.".././heis/")
+import (.".././heis/"
+		".././network/")
 
 type Queue struct {
 	UP [4]int
@@ -74,15 +75,11 @@ func EmptyQ()(int){
             return 0
         }
 	}
-	println("Q is empty")
     return 1
 }
 
 
 func NextInQ(dir string, floor int) (int) {
-	if(floor == -1){
-		return -1
-	}
 	switch dir {
 	case "U" :
 		for i := floor ; i < 4 ; i++ {
@@ -125,6 +122,16 @@ func RemoveOrder(floor int) {
 	Q.UP[floor] = 0
 	Q.DOWN[floor] = 0
 	Q.CMD[floor] = 0
+
+	if (network.Master){
+		var temp network.Message
+		temp.From = network.IP
+		temp.Message = "rm" + string(floor)
+		network.NewMessage <- &temp
+	}else{
+		temp := "rm" + string(floor)
+		network.SendMessage(temp, network.MasterConn.Conn)
+	}
 
 	switch floor {
 		case 0:

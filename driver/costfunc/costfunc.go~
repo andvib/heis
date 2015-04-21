@@ -46,6 +46,11 @@ func ReceiveMessage(){
 			ko.AddOrder(floor, string(received.Message[3]))
 		}else if (order == "ba"){
 			receiveBackup(received.Message[2:])
+		}else if (order == "nm"){
+			newMaster()
+		}else if (order == "rm"){
+			//temp, _ := strconv.Atoi(string(received.Message[2]))
+			RemoveBUOrder(received)
 		}
 	}
 }
@@ -286,3 +291,15 @@ func newMaster(){
 	}
 }
 
+
+func RemoveBUOrder(m *Message){
+	backup.UP[m.Message[2]] = 0
+	backup.DOWN[m.Message[2]] = 0
+	backup.CMD[m.Message[2]] = 0
+
+
+	for i := 3 ; i > -1 ; i-- {
+		println(backup.UP[i], "\t", backup.DOWN[i], "\t", backup.CMD[i])
+	}
+	println("")
+}
