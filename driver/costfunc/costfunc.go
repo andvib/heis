@@ -1,16 +1,57 @@
 package costfunc
 
-import(".././network"
+import(.".././network"
 		".././heis/"
 		"strconv"
 		".././ko/"
 		".././event/"
-		"time")
+		"time"
+		"net")
 
 var backup ko.Queue
 var qCopy ko.Queue
+var BestOrder OrderCost
 
-var BestOrder network.OrderCost
+type OrderCost struct{
+	Cost int
+	Conn *net.UDPConn
+}
+
+
+func ReceiveMessage(){
+	var received *Message
+
+	for ;; {
+		received = <- NewMessage
+		
+		order := received.Message[:2]
+
+		if (order == "oc"){
+			var temp OrderCost
+			temp.Cost, _ = strconv.Atoi(string(received.Message[2]))
+			temp.Conn = FindConn(received.From)
+			CheckCost(temp)
+		}else if (order == "no"){
+			var temp driver.ButtonEvent
+			temp.Floor, _ = strconv.Atoi(string(received.Message[3]))
+			temp.Button = string(received.Message[2])
+			newOrderMaster(temp)
+		}else if (order == "cc"){
+			var temp driver.ButtonEvent
+			temp.Floor, _ = strconv.Atoi(string(received.Message[2]))
+			temp.Button = string(received.Message[3])	
+			slaveCalculate(temp)
+		}else if (order == "eo"){
+			floor, _ := strconv.Atoi(string(received.Message[2]))
+			ko.AddOrder(floor, string(received.Message[3]))
+		}else if (order == "ba"){
+			receiveBackup(received.Message[2:])
+		}else if (order == "nm"){
+			newMaster()
+		}
+	}
+}
+
 
 func ButtonHandle(){
 	var buttonEvent driver.ButtonEvent
@@ -19,7 +60,7 @@ func ButtonHandle(){
 		buttonEvent = <- driver.ButtonChan
 		if (buttonEvent.Button == "C"){
 			ko.AddOrder(buttonEvent.Floor,buttonEvent.Button)
-		}else if network.Master {	
+		}else if Master {	
 			newOrderMaster(buttonEvent)
 		}else{
 			newOrderSlave(buttonEvent)
@@ -32,7 +73,7 @@ func newOrderSlave(order driver.ButtonEvent){
 	println("NewOrderSlave")
 	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
-	network.SendMessage(message, network.Broadcast.Conn)
+	SendMessage(message, Broadcast.Conn)
 	println("New order message sent")
 }
 
@@ -45,20 +86,12 @@ func newOrderMaster(order driver.ButtonEvent){
 	floor := strconv.Itoa(order.Floor)
 
 	message := "cc" + floor + order.Button
-	network.SendMessage(message,network.Broadcast.Conn)
+	SendMessage(message,Broadcast.Conn)
 	println("Sent calculate cost")
 	timer := time.Now()
 	//var bestOrder network.OrderCost
 	BestOrder.Cost = 1000
 	for ; (time.Since(timer) < 200*time.Millisecond) ; {}
-	
-	/*for o := range network.CostReceived{
-		println("Something on the channel")
-		if o.Cost < BestOrder.Cost {
-			BestOrder.Cost = o.Cost
-			BestOrder.Conn = o.Conn
-		}
-	}*/
 
 	if Cost(order.Floor,order.Button) <= BestOrder.Cost{
 		println("Takes the order itself")
@@ -66,31 +99,23 @@ func newOrderMaster(order driver.ButtonEvent){
 	}else{
 		println("Sends execute order")
 		newOrder := "eo" + strconv.Itoa(order.Floor) + order.Button
-		network.SendMessage(newOrder,BestOrder.Conn)
+		SendMessage(newOrder,BestOrder.Conn)
 	}
 }
 
 
-func CostChan(){
-	for ;; {
-		o := <-network.CostReceived
-		if o.Cost < BestOrder.Cost{
-			BestOrder.Cost = o.Cost
-			BestOrder.Conn = o.Conn
-		}
+func CheckCost(c OrderCost){
+	if c.Cost < BestOrder.Cost{
+		BestOrder.Cost = c.Cost
+		BestOrder.Conn = c.Conn
 	}
 }
 
 
-func SlaveCalculate(){
-	var temp driver.ButtonEvent
-	for ;; {
-		temp = <- network.CalCost
-		println("Calculating cost")
-		cost := Cost(temp.Floor,temp.Button)
-		message := "oc" + strconv.Itoa(cost)
-		network.SendMessage(message,network.Broadcast.Conn)
-	}
+func slaveCalculate(order driver.ButtonEvent){
+	cost := Cost(order.Floor,order.Button)
+	message := "oc" + strconv.Itoa(cost)
+	SendMessage(message,Broadcast.Conn)
 }
 
 
@@ -128,10 +153,6 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		if (ordersInQ[i] == orderedFloor){
 			println("Etasje allerede bestilt!")
 			cost = 0
-		/*}else if (orderedFloor < ordersInQ[0]) && (orderedDir == "U") && (event.Floor < orderedFloor){
-			cost = 0
-		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "D") && (event.Floor > orderedFloor){
-			cost = 0*/
 		}
 	}
 	
@@ -152,8 +173,6 @@ func Cost (orderedFloor int, orderedDir string) (int){
 			cost = 2*(i+1)
 		}
 	}
-
-	//cost = cost + event.Floor
 
 	if (event.Floor == orderedFloor){
 		cost = 0
@@ -235,8 +254,7 @@ func sendBackup(){
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.CMD[i])
 	}
-	//println(message)
-	network.SendMessage(message, network.Broadcast.Conn)
+	SendMessage(message, Broadcast.Conn)
 }
 
 
@@ -252,15 +270,21 @@ func receiveBackup(message string){
 	}
 }
 
-func ReceiveOrder(){
+
+func newMaster(){
 	var temp driver.ButtonEvent
-	for  {
-	message := <- network.OrderReceived
-	temp.Floor, _ = strconv.Atoi(string(message.Message[3]))
-	temp.Button = string(message.Message[2])
-	println("New order: ", temp.Button, temp.Floor)
-	//ko.AddOrder(floor,button)
-	//Cost(floor,button)
-	newOrderMaster(temp)
+	
+	for i := 0 ; i < 4 ; i++{
+		if (backup.UP[i] == 1){
+			temp.Floor = i
+			temp.Button = "U"
+			newOrderMaster(temp)
+		}
+	
+		if (backup.DOWN[i] == 1) {
+			temp.Floor = i
+			temp.Button = "D"
+		}
 	}
 }
+

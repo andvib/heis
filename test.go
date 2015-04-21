@@ -23,9 +23,7 @@ func main(){
     go FloorSensor()
 	go ButtonPush()
 	go costfunc.ButtonHandle()
-	go costfunc.ReceiveOrder()
-	go costfunc.CostChan()
-	go costfunc.SlaveCalculate()
+	go costfunc.ReceiveMessage()
 
 	event.State = "IDLE"
 	go event.StateMachine()
@@ -34,11 +32,5 @@ func main(){
 	//go ko.ButtonHandle()
 	go event.ReadEvent()
 
-	//go costfunc.ButtonHandle()
-
 	select {}
-	/*for ; true ; {
-		costfunc.Cost()
-		time.Sleep(1000*time.Millisecond)
-	}*/
 }

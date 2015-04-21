@@ -7,9 +7,7 @@ import("net"
 	   "strings"
 	   "time"
        "strconv"
-	   /*"runtime"*/
-		".././ko/"
-		".././heis/")
+		/*".././heis/"*/)
 
 
 type Connection struct{
@@ -18,15 +16,7 @@ type Connection struct{
 	LastSignal time.Time
 }
 
-
-type OrderCost struct{
-	Cost int
-	Conn *net.UDPConn
-}
-
-var OrderReceived = make(chan *Message)
-var CostReceived = make(chan OrderCost)
-var CalCost = make(chan driver.ButtonEvent)
+var NewMessage = make(chan *Message)
 
 var Connected []Connection
 var Master = false
@@ -92,7 +82,7 @@ func whatToDo(m *Message){
 	if order == "am"{
 		//Alive-signal from master
 		MasterConn.LastSignal = time.Now()
-	    if (MasterConn.IP == "") || (MasterConn.IP != IP){
+	    if (MasterConn.IP == "") || (MasterConn.IP != m.From){
 			if Master {
 				Master = false
 			}
@@ -121,25 +111,8 @@ func whatToDo(m *Message){
     }else if order == "co" {
         println("Connect to: ", m.From)
         connect(m.From)
-    }else if order == "no"{
-		//println("New order")
-		OrderReceived <- m
-	}else if order == "oc"{
-		println("Cost received")
-		var temp OrderCost
-		temp.Cost, _ = strconv.Atoi(string(m.Message[2]))
-		temp.Conn = findConn(m.From)
-		CostReceived <- temp
-	}else if order == "cc" {
-		var temp driver.ButtonEvent
-		println("Calculate cost")
-		temp.Floor, _ = strconv.Atoi(string(m.Message[2]))
-		temp.Button = string(m.Message[3])
-		CalCost <- temp
-	}else if order == "eo"{
-		floor, _ := strconv.Atoi(string(m.Message[2]))
-		println("Execute order: ",floor,string(m.Message[3]))
-		ko.AddOrder(floor, string(m.Message[3]))
+    }else{
+		NewMessage <- m
 	}
 }
 
@@ -178,7 +151,7 @@ func RemoveConn(index int) {
 }
 
 
-func findConn(ip string) (*net.UDPConn){
+func FindConn(ip string) (*net.UDPConn){
 	for i := 0 ; i < len(Connected) ; i++ {
 		if Connected[i].IP == ip {
 			return Connected[i].Conn
@@ -215,6 +188,11 @@ func WhosMaster() {
     if (me == true) {
         println("I am the new master")
         Master = true
+		
+		var temp Message
+		temp.From = IP
+		temp.Message = "nm"
+		NewMessage <- &temp
     }
 
     MasterConn.IP = ""
