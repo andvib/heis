@@ -39,7 +39,8 @@ func ReceiveMessage(){
 		}else if (order == "cc"){
 			var temp driver.ButtonEvent
 			temp.Floor, _ = strconv.Atoi(string(received.Message[2]))
-			temp.Button = string(received.Message[3])	
+			temp.Button = string(received.Message[3])
+			lightsOn(temp)	
 			slaveCalculate(temp)
 		}else if (order == "eo"){
 			floor, _ := strconv.Atoi(string(received.Message[2]))
@@ -49,8 +50,10 @@ func ReceiveMessage(){
 		}else if (order == "nm"){
 			newMaster()
 		}else if (order == "rm"){
-			//temp, _ := strconv.Atoi(string(received.Message[2]))
-			RemoveBUOrder(received)
+			if (Master){
+				RemoveBUOrder(received)
+			}
+			lightsOff(int(received.Message[2]))
 		}
 	}
 }
@@ -87,6 +90,8 @@ func newOrderMaster(order driver.ButtonEvent){
 	sendBackup()
 	
 	floor := strconv.Itoa(order.Floor)
+
+	lightsOn(order)
 
 	message := "cc" + floor + order.Button
 	SendMessage(message,Broadcast.Conn)
@@ -293,13 +298,33 @@ func newMaster(){
 
 
 func RemoveBUOrder(m *Message){
-	backup.UP[m.Message[2]] = 0
-	backup.DOWN[m.Message[2]] = 0
-	backup.CMD[m.Message[2]] = 0
+	floor,_ := strconv.Atoi(string(m.Message[2]))
+	backup.UP[floor] = 0
+	backup.DOWN[floor] = 0
+	backup.CMD[floor] = 0
 
 
 	/*for i := 3 ; i > -1 ; i-- {
 		println(backup.UP[i], "\t", backup.DOWN[i], "\t", backup.CMD[i])
 	}
 	println("")*/
+}
+
+
+func lightsOff(m int){
+	floor,_ := strconv.Atoi(string(m))
+	println(floor)
+	driver.ELEV_set_button_lamp(0,floor,0)
+	driver.ELEV_set_button_lamp(1,floor,0)
+}
+
+
+func lightsOn(m driver.ButtonEvent){
+	switch m.Button{
+	case "U":
+		driver.ELEV_set_button_lamp(0,m.Floor,1)
+	
+	case "D":
+		driver.ELEV_set_button_lamp(1,m.Floor,1)
+	}
 }

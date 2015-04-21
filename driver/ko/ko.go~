@@ -1,7 +1,8 @@
 package ko
 
 import (.".././heis/"
-		".././network/")
+		".././network/"
+		"strconv")
 
 type Queue struct {
 	UP [4]int
@@ -126,11 +127,11 @@ func RemoveOrder(floor int) {
 	if (network.Master){
 		var temp network.Message
 		temp.From = network.IP
-		temp.Message = "rm" + string(floor)
+		temp.Message = "rm" + strconv.Itoa(floor)
 		network.NewMessage <- &temp
 	}else{
 		temp := "rm" + string(floor)
-		network.SendMessage(temp, network.MasterConn.Conn)
+		network.SendMessage(temp, network.Broadcast.Conn)
 	}
 
 	switch floor {
