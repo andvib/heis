@@ -29,7 +29,6 @@ func main(){
 	go event.StateMachine()
 
 	ko.Q_init()
-	//go ko.ButtonHandle()
 	go event.ReadEvent()
 
 	select {}

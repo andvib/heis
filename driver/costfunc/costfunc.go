@@ -153,33 +153,33 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 
 	if (ko.EmptyQ() == 1) {
-		cost = 0
+		cost = 1
 	}
 
 	for i := 0 ; i < len(ordersInQ) ; i++ {
 		if (ordersInQ[i] == orderedFloor){
-			cost = 0
+			cost = i+1
 		}
 	}
 	
 	if (len(ordersInQ) != 0){
 		if (orderedFloor < ordersInQ[0]) && (orderedDir == "U") && (event.Floor < orderedFloor){
-			cost = 1
+			cost = 2
 		}else if (orderedFloor > ordersInQ[0]) && (orderedDir == "D") && (event.Floor > orderedFloor){
-			cost = 1
+			cost = 2
 		}
 	}
 
 	for i := 0 ; i < len(ordersInQ) -1 ; i++{
 		if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "U") && (2*(i+1) < cost){
-			cost = 2*(i+1)
+			cost = 3*(i+1)
 		}else if (ordersInQ[i] > orderedFloor) && (ordersInQ[i+1] < orderedFloor) && (orderedDir == "D") && (2*(i+1) < cost){
-			cost = 2*(i+1)
+			cost = 3*(i+1)
 		}
 	}
 
-	if (event.Floor == orderedFloor){
-		cost = 1
+	if (event.CurrentFloor == orderedFloor){
+		cost = 0
 	}
 
 	if ((len(ordersInQ) + 1)*2 < cost){
