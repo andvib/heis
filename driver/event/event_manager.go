@@ -44,7 +44,7 @@ func StateMachine(){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
 				}
-				Event = ""
+				//Event = ""
 			}/*else if Event == "NEW_ORDER" {
 				NextFloor = ko.NextInQ(Dir,CurrentFloor)
 				moveToFloor()
@@ -54,7 +54,7 @@ func StateMachine(){
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
 				driver.ELEV_set_door_open_lamp(1)
-				time.Sleep(3000*time.Millisecond)
+				time.Sleep(1000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
 				ko.RemoveOrder(CurrentFloor)
 				NextFloor = ko.NextInQ(Dir,Floor)
@@ -74,11 +74,11 @@ func ReadEvent() {
 	var event driver.FloorEvent
 
 	for ; true ; {
-		if Event == "" {
+		//if Event == "" {
 			event = <- driver.ElevChan
 			Event = event.Event
 			EventFloor = event.Floor
-		}
+		//}
 	}
 }
 

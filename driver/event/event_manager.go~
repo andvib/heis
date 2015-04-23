@@ -44,12 +44,12 @@ func StateMachine(){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
 				}
-				Event = ""
-			}else if Event == "NEW_ORDER" {
+				//Event = ""
+			}/*else if Event == "NEW_ORDER" {
 				NextFloor = ko.NextInQ(Dir,CurrentFloor)
 				moveToFloor()
 				Event = ""
-			}
+			}*/
 
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
@@ -74,11 +74,11 @@ func ReadEvent() {
 	var event driver.FloorEvent
 
 	for ; true ; {
-		if Event == "" {
+		//if Event == "" {
 			event = <- driver.ElevChan
 			Event = event.Event
 			EventFloor = event.Floor
-		}
+		//}
 	}
 }
 
