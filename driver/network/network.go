@@ -20,7 +20,7 @@ var NewMessage = make(chan *Message)
 var Connected []Connection
 var Master = false
 var IP string
-var PORT = "30020"
+var PORT = "30021"
 var MasterConn Connection
 var Broadcast Connection
 
@@ -57,7 +57,7 @@ func NETWORK_init(){
 	//SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
-	go updateMessages()
+	//go updateMessages()
 }
 
 

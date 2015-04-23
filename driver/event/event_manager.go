@@ -15,7 +15,7 @@ var Dir string
 func StateMachine(){
 	startUp()
 	for ; true ; {
-		NextFloor = ko.NextInQ(Dir,Floor) 
+		NextFloor = ko.NextInQ(Dir,CurrentFloor) 
 		switch State {
 	
 		case "IDLE" :
@@ -28,11 +28,14 @@ func StateMachine(){
 					State = "MOVING"
 					moveToFloor()
 				//	println("MOVING")
+				Event = ""
 				}
 			}
 
 		case "MOVING" :
 			if Event == "NEW_FLOOR" {
+				println("NEW_FLOOR")
+				println("NextFloor: ", NextFloor)
 				CurrentFloor := driver.ELEV_get_floor_sensor_signal()
 				if (CurrentFloor != -1){
 					Floor = CurrentFloor
@@ -40,28 +43,26 @@ func StateMachine(){
 				if (driver.ELEV_get_floor_sensor_signal() == NextFloor){
 					driver.ELEV_set_motor_direction(0)
 					State = "DOOR_OPEN"
-					//println("EVENT:DOOR_OPEN")
 				}
-			}
+				Event = ""
+			}/*else if Event == "NEW_ORDER" {
+				NextFloor = ko.NextInQ(Dir,CurrentFloor)
+				moveToFloor()
+				Event = ""
+			}*/
 
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
-				//println("DOOR OPEN ",Floor)
 				driver.ELEV_set_door_open_lamp(1)
 				time.Sleep(3000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
-				//println("DOOR CLOSED")
-				ko.RemoveOrder(Floor)
+				ko.RemoveOrder(CurrentFloor)
 				NextFloor = ko.NextInQ(Dir,Floor)
 			}			
-			
-			//println("NEXT: ", NextFloor)
-			//println("FLOOR: ", Floor)
 			if (NextFloor != -1){
 				State = "MOVING"
 				moveToFloor()
 			}else if (NextFloor == -1){
-				//println("Going to IDLE")
 				State = "IDLE"
 				Event = ""
 			}
@@ -73,9 +74,11 @@ func ReadEvent() {
 	var event driver.FloorEvent
 
 	for ; true ; {
-		event = <- driver.ElevChan
-		Event = event.Event
-		EventFloor = event.Floor
+		if Event == "" {
+			event = <- driver.ElevChan
+			Event = event.Event
+			EventFloor = event.Floor
+		}
 	}
 }
 

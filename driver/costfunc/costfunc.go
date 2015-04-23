@@ -150,9 +150,9 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 	
-	for i := 0; i < len(ordersInQ) ; i++ {
+	/*for i := 0; i < len(ordersInQ) ; i++ {
 		println(ordersInQ[i])
-	}
+	}*/
 
 
 	if (ko.EmptyQ() == 1) {
