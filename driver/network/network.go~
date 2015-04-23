@@ -57,7 +57,7 @@ func NETWORK_init(){
 	//SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
-	//go updateMessages()
+	go updateMessages()
 }
 
 
@@ -117,14 +117,6 @@ func whatToDo(m *Message){
 	}else if order == "ac" {
 		messageAcknowledged(m)
 
-    /*}else if order == "nw" {
-		
-        println("New connection from: ", m.From)
-        conn := connect(m.From)
-        SendMessage("co", conn)
-    }else if order == "co" {	
-        println("Connect to: ", m.From)
-        connect(m.From)*/
     }else{
 		NewMessage <- m
 	}
@@ -133,16 +125,13 @@ func whatToDo(m *Message){
 
 func timeout(){
 	for ; true ; {
-		//println("Timeout")
 		if (time.Since(MasterConn.LastSignal) > 900*time.Millisecond) && (Master == false){
 			//No master on the network
-            //println("Master timeout")
 			go WhosMaster()
 			time.Sleep(500*time.Millisecond)
 		}
 
 		for i := 0 ; i < len(Connected) ; i++ {
-			//println("Check slave timeout")
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
                 println("Slave timeout: ", Connected[i].IP)
 				Connected[i].Conn.Close()

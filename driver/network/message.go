@@ -40,7 +40,6 @@ func SendMessage(text string, conn *net.UDPConn, ack bool){
 }
 
 func receiveMessage(mess string){
-	//println("Receive message")
 	m := new(Message)
 	text := strings.Split(mess, "+")
     m.From = text[0]
@@ -70,7 +69,9 @@ func addMessage(message *Message, conn *net.UDPConn) {
 
 func messageAcknowledged(message *Message){
 	for i := 0 ; i < len(sentMessages) ; i++ {
-		if (sentMessages[i].message.Message[2:] == message.Message) && (sentMessages[i].message.From == message.From){
+		println("stored: ", sentMessages[i].message.Message)
+		println("ac ", message.Message[2:6])
+		if (sentMessages[i].message.Message == message.Message[2:6]) /*&& (sentMessages[i].message.From == message.From)*/{
 			removeMessage(i)
 		}
 	}
@@ -86,10 +87,11 @@ func updateMessages(){
 	for ; true ; {
 		for i := 0 ; i < len(sentMessages) ; i++ {
 			if (time.Since(sentMessages[i].sent) > 2000*time.Millisecond){
-				SendMessage(sentMessages[i].message.Message, FindConn(sentMessages[i].message.From),true)
+				SendMessage(sentMessages[i].message.Message, sentMessages[i].To,true)
 				removeMessage(i)
 			}
 		}
+		print(len(sentMessages))
 		time.Sleep(1000*time.Millisecond)
 	}
 }
