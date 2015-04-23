@@ -117,6 +117,7 @@ func CheckCost(c OrderCost){
 		BestOrder.Cost = c.Cost
 		BestOrder.Conn = c.Conn
 	}
+	println("New cost: ", c.Cost)
 }
 
 

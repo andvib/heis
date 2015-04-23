@@ -8,6 +8,7 @@ var State string //IDLE, MOVING, DOOR_OPEN
 var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
 var EventFloor int
 var Floor int
+var CurrentFloor
 var NextFloor int
 var Dir string
 
@@ -32,7 +33,7 @@ func StateMachine(){
 
 		case "MOVING" :
 			if Event == "NEW_FLOOR" {
-				temp := driver.ELEV_get_floor_sensor_signal()
+				CurrentFloor := driver.ELEV_get_floor_sensor_signal()
 				if (temp != -1){
 					Floor = temp
 				}

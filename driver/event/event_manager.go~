@@ -2,13 +2,13 @@ package event
 
 import(".././heis/"
 		"time"
-		".././ko/"
-		".././network/")
+		".././ko/")
 
 var State string //IDLE, MOVING, DOOR_OPEN
 var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
 var EventFloor int
 var Floor int
+var CurrentFloor
 var NextFloor int
 var Dir string
 
