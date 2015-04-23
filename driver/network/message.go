@@ -10,11 +10,13 @@ import ("strings"
 
 type Message struct{
 	From string
+	To string
 	Message string
 }
 
 
 type sentMessage struct {
+	To *net.UDPConn
 	message *Message
 	sent time.Time
 }
@@ -23,11 +25,17 @@ type sentMessage struct {
 var sentMessages []*sentMessage
 
 
-func SendMessage(text string, conn *net.UDPConn){
+func SendMessage(text string, conn *net.UDPConn, ack bool){
 	m := new(Message)
 	m.From = IP
 	m.Message = text
 	messageString := m.From + "+" + m.Message
+	
+	if(ack) {
+		m.To = MasterConn.IP
+		addMessage(m, conn)
+	}
+
 	send(messageString, conn)
 }
 
@@ -51,17 +59,18 @@ func printMessage(m *Message){
 }
 
 
-/*func addMessage(message *message) {
+func addMessage(message *Message, conn *net.UDPConn) {
 	var temp sentMessage
 	temp.message = message
 	temp.sent = time.Now()
+	temp.To = conn
 	sentMessages = append(sentMessages,&temp)
 }
 
 
-func messageAcknowledged(message *message){
+func messageAcknowledged(message *Message){
 	for i := 0 ; i < len(sentMessages) ; i++ {
-		if (sentMessages[i].message.message == message.message) && (sentMessages[i].message.from == message.from){
+		if (sentMessages[i].message.Message[2:] == message.Message) && (sentMessages[i].message.From == message.From){
 			removeMessage(i)
 		}
 	}
@@ -77,10 +86,10 @@ func updateMessages(){
 	for ; true ; {
 		for i := 0 ; i < len(sentMessages) ; i++ {
 			if (time.Since(sentMessages[i].sent) > 2000*time.Millisecond){
-				SendMessage(sentMessages[i].message.message, findConn(sentMessages[i].message.from))
+				SendMessage(sentMessages[i].message.Message, FindConn(sentMessages[i].message.From),true)
 				removeMessage(i)
 			}
 		}
 		time.Sleep(1000*time.Millisecond)
 	}
-}*/
+}

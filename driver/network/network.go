@@ -54,20 +54,20 @@ func NETWORK_init(){
 	conn := connect("")
 
 	//Asks other units to connect
-	SendMessage("nw", Broadcast.Conn)
+	//SendMessage("nw", Broadcast.Conn)
 
 	go alive(conn)
-	//go updateMessages()
+	go updateMessages()
 }
 
 
 func alive(conn *net.UDPConn){
 	for ; true ; {
 		if Master {
-    		SendMessage("am", conn)
+    		SendMessage("am", conn,false)
     		time.Sleep(100*time.Millisecond)
 		}else{
-			SendMessage("as", conn)
+			SendMessage("as", conn,false)
 			time.Sleep(200*time.Millisecond)
 		}
 	}
@@ -77,6 +77,10 @@ func alive(conn *net.UDPConn){
 func whatToDo(m *Message){
 	//Checks what to do with the new message
 	order := m.Message[:2]
+
+	if (m.From == IP){
+		return
+	}
 
 	if order == "am"{
 		//Alive-signal from master
@@ -98,21 +102,29 @@ func whatToDo(m *Message){
 
     }else if order == "as" {
 		//println("Alive slave")
+		found := false
         for i := 0 ; i < len(Connected) ; i++ {
             if m.From == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
+				found = true
             }
         }
-    }else if order == "nw" {
-		if (m.From == IP){
-			return
+
+		if (!found) && (m.From != MasterConn.IP) {
+			connect(m.From)
 		}
+
+	}else if order == "ac" {
+		messageAcknowledged(m)
+
+    /*}else if order == "nw" {
+		
         println("New connection from: ", m.From)
         conn := connect(m.From)
         SendMessage("co", conn)
     }else if order == "co" {	
         println("Connect to: ", m.From)
-        connect(m.From)
+        connect(m.From)*/
     }else{
 		NewMessage <- m
 	}
@@ -135,6 +147,12 @@ func timeout(){
                 println("Slave timeout: ", Connected[i].IP)
 				Connected[i].Conn.Close()
 				RemoveConn(i)
+				if (Master) {
+					var temp Message
+					temp.From = IP
+					temp.Message = "nm"
+					NewMessage <- &temp
+				}
 			}
 		}
 	}

@@ -36,6 +36,8 @@ func ReceiveMessage(){
 			temp.Floor, _ = strconv.Atoi(string(received.Message[3]))
 			temp.Button = string(received.Message[2])
 			newOrderMaster(temp)
+			newMess := "ac" + received.Message
+			SendMessage(newMess,FindConn(received.From),false)
 		}else if (order == "cc"){
 			var temp driver.ButtonEvent
 			temp.Floor, _ = strconv.Atoi(string(received.Message[2]))
@@ -79,7 +81,7 @@ func newOrderSlave(order driver.ButtonEvent){
 	println("NewOrderSlave")
 	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
-	SendMessage(message, Broadcast.Conn)
+	SendMessage(message, Broadcast.Conn, true)
 	println("New order message sent")
 }
 
@@ -94,7 +96,7 @@ func newOrderMaster(order driver.ButtonEvent){
 	lightsOn(order)
 
 	message := "cc" + floor + order.Button
-	SendMessage(message,Broadcast.Conn)
+	SendMessage(message,Broadcast.Conn,false)
 	println("Sent calculate cost")
 	timer := time.Now()
 	//var bestOrder network.OrderCost
@@ -107,7 +109,7 @@ func newOrderMaster(order driver.ButtonEvent){
 	}else{
 		println("Sends execute order")
 		newOrder := "eo" + strconv.Itoa(order.Floor) + order.Button
-		SendMessage(newOrder,BestOrder.Conn)
+		SendMessage(newOrder,BestOrder.Conn,false)
 	}
 }
 
@@ -116,15 +118,16 @@ func CheckCost(c OrderCost){
 	if c.Cost < BestOrder.Cost{
 		BestOrder.Cost = c.Cost
 		BestOrder.Conn = c.Conn
+		println("Better cost: ", c.Cost)
 	}
-	println("New cost: ", c.Cost)
+	//println("New cost: ", c.Cost)
 }
 
 
 func slaveCalculate(order driver.ButtonEvent){
 	cost := Cost(order.Floor,order.Button)
 	message := "oc" + strconv.Itoa(cost)
-	SendMessage(message,Broadcast.Conn)
+	SendMessage(message,Broadcast.Conn,false)
 }
 
 
@@ -245,7 +248,6 @@ func addToBackup(order driver.ButtonEvent){
 	}
 }
 
-
 func sendBackup(){
 	message := "ba"
 	for i := 0 ; i < 4 ; i++ {
@@ -257,7 +259,8 @@ func sendBackup(){
 	for i := 0 ; i < 4 ; i++ {
 		message = message + strconv.Itoa(backup.CMD[i])
 	}
-	SendMessage(message, Broadcast.Conn)
+
+	SendMessage(message, Broadcast.Conn,false)
 }
 
 
@@ -287,6 +290,7 @@ func newMaster(){
 		if (backup.DOWN[i] == 1) {
 			temp.Floor = i
 			temp.Button = "D"
+			newOrderMaster(temp)
 		}
 	}
 }

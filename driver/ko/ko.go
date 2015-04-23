@@ -133,7 +133,7 @@ func RemoveOrder(floor int) {
 		network.NewMessage <- &temp
 	}
 
-	network.SendMessage(mess, network.Broadcast.Conn)
+	network.SendMessage(mess, network.Broadcast.Conn, false)
 
 	switch floor {
 		case 0:
