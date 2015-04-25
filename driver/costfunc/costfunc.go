@@ -1,4 +1,4 @@
-package costfunc
+package elevlog
 
 import(.".././network"
 		".././heis/"
@@ -18,60 +18,19 @@ type OrderCost struct{
 }
 
 
-func ReceiveMessage(){
-	var received *Message
-
-	for ;; {
-		received = <- NewMessage
-		
-		order := received.Message[:2]
-		//println(received.Message)
-		if (order == "oc"){
-			var temp OrderCost
-			temp.Cost, _ = strconv.Atoi(string(received.Message[2]))
-			temp.Conn = FindConn(received.From)
-			CheckCost(temp)
-		}else if (order == "no"){
-			if (Master){
-				var temp driver.ButtonEvent
-				temp.Floor, _ = strconv.Atoi(string(received.Message[3]))
-				temp.Button = string(received.Message[2])
-				newOrderMaster(temp)
-				newMess := "ac" + received.Message
-				SendMessage(newMess,FindConn(received.From),false)
-			}
-		}else if (order == "cc"){
-			var temp driver.ButtonEvent
-			temp.Floor, _ = strconv.Atoi(string(received.Message[2]))
-			temp.Button = string(received.Message[3])
-			lightsOn(temp)	
-			slaveCalculate(temp)
-		}else if (order == "eo"){
-			floor, _ := strconv.Atoi(string(received.Message[2]))
-			ko.AddOrder(floor, string(received.Message[3]))
-		}else if (order == "ba"){
-			receiveBackup(received.Message[2:])
-		}else if (order == "nm"){
-			newMaster()
-		}else if (order == "rm"){
-			if (Master){
-				RemoveBUOrder(received)
-			}
-			lightsOff(int(received.Message[2]))
-		}
-	}
-}
-
-
 func ButtonHandle(){
+	//Decides what to be done when a button is pushed
 	var buttonEvent driver.ButtonEvent
 
 	for ; true ; {
 		buttonEvent = <- driver.ButtonChan
 		if (buttonEvent.Button == "C"){
+			//Internal order, added to local q
 			ko.AddOrder(buttonEvent.Floor,buttonEvent.Button)
+
 		}else if Master {	
 			newOrderMaster(buttonEvent)
+
 		}else{
 			newOrderSlave(buttonEvent)
 		}
@@ -80,16 +39,15 @@ func ButtonHandle(){
 
 
 func newOrderSlave(order driver.ButtonEvent){
-	println("NewOrderSlave")
+	//Sends message to master containing the new order
 	message := "no" + order.Button + strconv.Itoa(order.Floor)
 	println(message)
 	SendMessage(message, Broadcast.Conn, true)
-	println("New order message sent")
 }
 
 
 func newOrderMaster(order driver.ButtonEvent){
-	println("NewOrderMaster")
+	//New order received by master
 	addToBackup(order)
 	sendBackup()
 	
@@ -97,13 +55,15 @@ func newOrderMaster(order driver.ButtonEvent){
 
 	lightsOn(order)
 
+	//Sends calculate cost message to slaves
 	message := "cc" + floor + order.Button
 	SendMessage(message,Broadcast.Conn,false)
-	println("Sent calculate cost")
+	
+	//Waits to receive costs from slaves
 	timer := time.Now()
-	//var bestOrder network.OrderCost
 	BestOrder.Cost = 1000
 	for ; (time.Since(timer) < 500*time.Millisecond) ; {}
+
 
 	if Cost(order.Floor,order.Button) <= BestOrder.Cost{
 		println("Takes the order itself")
@@ -117,6 +77,7 @@ func newOrderMaster(order driver.ButtonEvent){
 
 
 func CheckCost(c OrderCost){
+	//Checks if cost received by slave is better than current cost
 	if c.Cost < BestOrder.Cost{
 		BestOrder.Cost = c.Cost
 		BestOrder.Conn = c.Conn
@@ -126,6 +87,7 @@ func CheckCost(c OrderCost){
 
 
 func slaveCalculate(order driver.ButtonEvent){
+	//Slave calculates its own cost and sends result to master
 	cost := Cost(order.Floor,order.Button)
 	message := "oc" + strconv.Itoa(cost)
 	SendMessage(message,Broadcast.Conn,false)
@@ -133,12 +95,13 @@ func slaveCalculate(order driver.ButtonEvent){
 
 
 func Cost (orderedFloor int, orderedDir string) (int){
-	println(orderedDir)
+	//Calculates cost for executing order
 	qCopy = ko.Q
 	var ordersInQ []int
 	moreOrders := true
 	cost := 100
 
+	//Creates an array containing the order that the local orders will be executed
 	for ; moreOrders ; {
 		temp := NextOrdered()
 		if (temp == -1) {
@@ -150,22 +113,21 @@ func Cost (orderedFloor int, orderedDir string) (int){
 			qCopy.CMD[temp] = 0
 		}
 	}
-	
-	/*for i := 0; i < len(ordersInQ) ; i++ {
-		println(ordersInQ[i])
-	}*/
 
-
+	//FINDS THE CURRENT COST OF THE ORDER
+	//Checks if the queue is empty
 	if (ko.EmptyQ() == 1) {
 		cost = 1
 	}
-
+	
+	//Checks if the floor is already ordered
 	for i := 0 ; i < len(ordersInQ) ; i++ {
 		if (ordersInQ[i] == orderedFloor){
 			cost = i+1
 		}
 	}
 	
+	//Checks if the order can be put ahead of existing orders	
 	if (len(ordersInQ) != 0){
 		if (orderedFloor < ordersInQ[0]) && (orderedDir == "U") && (event.Floor < orderedFloor){
 			cost = 2
@@ -174,6 +136,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 
+	//Checks if the order can be put between to existing orders in the given direction
 	for i := 0 ; i < len(ordersInQ) -1 ; i++{
 		if (ordersInQ[i] < orderedFloor) && (ordersInQ[i+1] > orderedFloor) && (orderedDir == "U") && (3*(i+1) < cost){
 			cost = 3*(i+1)
@@ -182,10 +145,12 @@ func Cost (orderedFloor int, orderedDir string) (int){
 		}
 	}
 
+	//Checks if the elevator is currently IDLE at ordered floor
 	if (event.Floor == orderedFloor) && (event.State != "MOVING"){
 		cost = 0
 	}
 
+	//If the order can't be put between existing orders, how much is the cost of putting it at the end
 	if ((len(ordersInQ) + 1)*2 < cost){
 		cost = (len(ordersInQ)+1)*3
 	}
@@ -197,6 +162,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 
 func NextOrdered() (int){
+	//Function used to find the next order in the local queue. Same logic as in the queue-module
 	switch event.Dir {
 	case "UP" :
 		for i := event.Floor ; i < 4 ; i++ {
@@ -235,7 +201,6 @@ func NextOrdered() (int){
 }
 		
 
-
 func addToBackup(order driver.ButtonEvent){
 	switch order.Button {
 	case "U":
@@ -246,54 +211,6 @@ func addToBackup(order driver.ButtonEvent){
 
 	case "C":
 		backup.CMD[order.Floor] = 1
-	}
-}
-
-
-func sendBackup(){
-	message := "ba"
-	for i := 0 ; i < 4 ; i++ {
-		message = message + strconv.Itoa(backup.UP[i])
-	}
-	for i := 0 ; i < 4 ; i++ {
-		message = message + strconv.Itoa(backup.DOWN[i])
-	}
-	for i := 0 ; i < 4 ; i++ {
-		message = message + strconv.Itoa(backup.CMD[i])
-	}
-
-	SendMessage(message, Broadcast.Conn,false)
-}
-
-
-func receiveBackup(message string){
-	for i := 0 ; i < 4 ; i++ {
-		letter1, _ := strconv.Atoi(string(message[i]))
-		letter2, _ := strconv.Atoi(string(message[i+4]))
-		letter3, _ := strconv.Atoi(string(message[i+8]))
-
-		backup.UP[i] = letter1
-		backup.DOWN[i] = letter2
-		backup.CMD[i] = letter3
-	}
-}
-
-
-func newMaster(){
-	var temp driver.ButtonEvent
-	
-	for i := 0 ; i < 4 ; i++{
-		if (backup.UP[i] == 1){
-			temp.Floor = i
-			temp.Button = "U"
-			newOrderMaster(temp)
-		}
-	
-		if (backup.DOWN[i] == 1) {
-			temp.Floor = i
-			temp.Button = "D"
-			newOrderMaster(temp)
-		}
 	}
 }
 
