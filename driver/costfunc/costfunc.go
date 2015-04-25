@@ -38,7 +38,6 @@ func ReceiveMessage(){
 				temp.Button = string(received.Message[2])
 				newOrderMaster(temp)
 				newMess := "ac" + received.Message
-				//println(newMess)
 				SendMessage(newMess,FindConn(received.From),false)
 			}
 		}else if (order == "cc"){

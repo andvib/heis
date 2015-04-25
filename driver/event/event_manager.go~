@@ -2,15 +2,17 @@ package event
 
 import(".././heis/"
 		"time"
-		".././ko/")
+		".././ko/"
+		".././network/")
 
 var State string //IDLE, MOVING, DOOR_OPEN
 var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
 var EventFloor int
 var Floor int
-//var CurrentFloor int
 var NextFloor int
 var Dir string
+var TimerMoving time.Time
+var TimerDoor time.Time
 
 func StateMachine(){
 	startUp()
@@ -20,10 +22,14 @@ func StateMachine(){
 	
 		case "IDLE" :
 			if Event == "NEW_ORDER"{
+				println("IDLE:NEW_ORDER")
 				NextFloor = ko.NextInQ(Dir,Floor)
+				println(NextFloor)
 				if NextFloor == Floor {
+					TimerDoor = time.Now()
 					State = "DOOR_OPEN"
 				}else{
+					TimerMoving = time.Now()
 					State = "MOVING"
 					moveToFloor()
 				Event = ""
@@ -38,6 +44,7 @@ func StateMachine(){
 				}
 				if (temp == NextFloor){
 					driver.ELEV_set_motor_direction(0)
+					TimerDoor = time.Now()
 					State = "DOOR_OPEN"
 				}
 			}
@@ -45,13 +52,14 @@ func StateMachine(){
 		case "DOOR_OPEN" :
 			if (driver.ELEV_get_floor_sensor_signal() != -1){
 				driver.ELEV_set_door_open_lamp(1)
-				time.Sleep(1000*time.Millisecond)
+				time.Sleep(3000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
 				ko.RemoveOrder(Floor)
 				NextFloor = ko.NextInQ(Dir,Floor)
 				println(NextFloor)
 			}			
 			if (NextFloor != -1){
+				TimerMoving = time.Now()
 				State = "MOVING"
 				moveToFloor()
 			}else if (NextFloor == -1){
@@ -61,6 +69,24 @@ func StateMachine(){
 		}
 	}
 }
+
+
+func ReadTimer(){
+	for {
+		if (time.Since(TimerMoving) > 10*time.Second) && (State == "MOVING"){
+			println("Elevator not moving!")
+			network.Alive = false
+		}else if (time.Since(TimerDoor) > 10*time.Second) && (State == "DOOR_OPEN"){
+			println("Door stuck!")
+			network.Alive = false
+		}else{
+			println("Alive")
+			network.Alive = true
+		}
+		time.Sleep(5*time.Second)
+	}
+}
+
 
 func ReadEvent() {
 	var event driver.FloorEvent

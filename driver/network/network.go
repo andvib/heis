@@ -15,18 +15,22 @@ type Connection struct{
 	LastSignal time.Time
 }
 
+
 var NewMessage = make(chan *Message)
 
-var Connected []Connection
-var Master = false
+
 var IP string
 var PORT = "30021"
+var Connected []Connection
 var MasterConn Connection
 var Broadcast Connection
+var Master = false
+var Alive bool
 
 
 func NETWORK_init(){
     println("NETWORK_init()")
+
 	//Retrieve local IP address
 	adr, _ := net.InterfaceAddrs()
 	ip := strings.Split(adr[1].String(), "/")
@@ -51,15 +55,18 @@ func NETWORK_init(){
 
     println("Master: ", Master)
 
+	//Establish broadcast-connection
 	conn := connect("")
 
+	Alive = true
 	go alive(conn)
 	go updateMessages()
 }
 
 
 func alive(conn *net.UDPConn){
-	for ; true ; {
+	//Sends appropriate alive-message
+	for ; Alive ; {
 		if Master {
     		SendMessage("am", conn,false)
     		time.Sleep(100*time.Millisecond)
@@ -82,8 +89,9 @@ func whatToDo(m *Message){
 	if order == "am"{
 		//Alive-signal from master
 		MasterConn.LastSignal = time.Now()
-		//println(Master)
-	    if /*(MasterConn.IP != m.From)*/(Master){
+
+	    if (Master){
+			//Detected another master-unit on the network, switches to slave
 			println("Other master")
 			Master = false
             MasterConn.IP = m.From
@@ -94,11 +102,10 @@ func whatToDo(m *Message){
 					RemoveConn(i)
                 }
             }
-			//WhosMaster()
 		}
 
     }else if order == "as" {
-		//println("Alive slave")
+		//Alive signal from slave
 		found := false
         for i := 0 ; i < len(Connected) ; i++ {
             if m.From == Connected[i].IP {
@@ -108,13 +115,16 @@ func whatToDo(m *Message){
         }
 
 		if (!found) && (m.From != MasterConn.IP) {
+			//Connects to the unit if not already connected
 			connect(m.From)
 		}
 
 	}else if order == "ac" {
+		//Previous message acknowledged
 		messageAcknowledged(m)
 
     }else{
+		//Sends message to message-handling in ****
 		NewMessage <- m
 	}
 }
@@ -130,10 +140,13 @@ func timeout(){
 
 		for i := 0 ; i < len(Connected) ; i++ {
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
+				//Slave timeout
                 println("Slave timeout: ", Connected[i].IP)
 				Connected[i].Conn.Close()
 				RemoveConn(i)
+
 				if (Master) {
+					//Tells ****-module to distribute backup-orders
 					var temp Message
 					temp.From = IP
 					temp.Message = "nm"
@@ -170,6 +183,7 @@ func FindConn(ip string) (*net.UDPConn){
 
 
 func WhosMaster() {
+	//Function for deciding who's the new master
 	println("Master timeout : WhosMaster()")
     me := true
     number := len(IP)
@@ -179,6 +193,7 @@ func WhosMaster() {
 		println("Connected[",i,"] : ", Connected[i].IP)
 	}
 
+	//Compares IP, lowest IP is the new master
     for i := 0 ; i < len(Connected) ; i++ {
         other, _ := strconv.Atoi(string(Connected[i].IP[number-2:number]))
 
@@ -192,6 +207,7 @@ func WhosMaster() {
         println("I am the new master")
         Master = true
 		
+		//Distributes backup
 		var temp Message
 		temp.From = IP
 		temp.Message = "nm"
@@ -199,6 +215,5 @@ func WhosMaster() {
     }
 
     MasterConn.IP = ""
-    //MasterConn.Conn.Close()
 	MasterConn.Conn = nil
 }

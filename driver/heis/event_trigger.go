@@ -1,5 +1,7 @@
 package driver
 
+import ("time")
+
 type FloorEvent struct{
 	Floor int
 	Event string	
@@ -34,33 +36,37 @@ func FloorSensor(){
 
 func ButtonPush() {
     var event ButtonEvent
+	
+	timer := time.Now()
 
 	for ; true ; {
 		for i := 0 ; i < 4 ; i++{
-			if (i != 3) && (ELEV_get_button_signal(0,i) == 1){
+			if (i != 3) && (ELEV_get_button_signal(0,i) == 1) && !((event.Button == "U") && (event.Floor == i)){
 
-   				for ; (ELEV_get_button_signal(0,i)) == 1 ; {
-				}
                 event.Button = "U"
                 event.Floor = i
                 ButtonChan <- event
+				timer = time.Now()
 
-			}else if (i != 0) && (ELEV_get_button_signal(1,i) == 1){
+			}else if (i != 0) && (ELEV_get_button_signal(1,i) == 1) && !((event.Button == "D") && (event.Floor == i)){
 
-				for ; (ELEV_get_button_signal(1,i) == 1) ; {
-				}
 				event.Button = "D"
                 event.Floor = i
                 ButtonChan <- event
+				timer = time.Now()
     
-			}else if (ELEV_get_button_signal(2,i) == 1){
+			}else if (ELEV_get_button_signal(2,i) == 1) && !((event.Button == "C") && (event.Floor == i)){
 
-				for ; (ELEV_get_button_signal(2,i) == 1) ; {
-				}
 				event.Button = "C"
                 event.Floor = i
                 ButtonChan <- event
+				timer = time.Now()
 			}
         }
+
+		if (time.Since(timer) > 1000*time.Millisecond){
+			event.Button = ""
+			event.Floor = -1
+		}
     }
 }
