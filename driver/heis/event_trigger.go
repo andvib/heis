@@ -16,7 +16,7 @@ var ElevChan = make(chan FloorEvent,100)
 var ButtonChan = make(chan ButtonEvent)
 
 
-func FloorSensor(){
+/*func FloorSensor(){
 	//Reads the floor-sensors and sends new-floor events to event manager
 	currentFloor := -1
 	var floor int
@@ -33,44 +33,61 @@ func FloorSensor(){
 		    ElevChan <- event
 	    }
 	}
-}  
+}*/ 
 
 
 func ButtonPush() {
 	//Reads when a button is pushed and sends the event to the elevlogic-module
 	//Uses a timer to avoid spamming the buttons
-    var event ButtonEvent
+    var buttonEvent ButtonEvent
+
+	currentFloor := -1
+	var floor int
+    var floorEvent FloorEvent
+
+
 	
 	timer := time.Now()
 
 	for ; true ; {
 		for i := 0 ; i < 4 ; i++{
-			if (i != 3) && (ELEV_get_button_signal(0,i) == 1) && !((event.Button == "U") && (event.Floor == i)){
+			if (i != 3) && (ELEV_get_button_signal(0,i) == 1) && !((buttonEvent.Button == "U") && (buttonEvent.Floor == i)){
 
-                event.Button = "U"
-                event.Floor = i
-                ButtonChan <- event
+                buttonEvent.Button = "U"
+                buttonEvent.Floor = i
+                ButtonChan <- buttonEvent
 				timer = time.Now()
 
-			}else if (i != 0) && (ELEV_get_button_signal(1,i) == 1) && !((event.Button == "D") && (event.Floor == i)){
+			}else if (i != 0) && (ELEV_get_button_signal(1,i) == 1) && !((buttonEvent.Button == "D") && (buttonEvent.Floor == i)){
 
-				event.Button = "D"
-                event.Floor = i
-                ButtonChan <- event
+				buttonEvent.Button = "D"
+                buttonEvent.Floor = i
+                ButtonChan <- buttonEvent
 				timer = time.Now()
     
-			}else if (ELEV_get_button_signal(2,i) == 1) && !((event.Button == "C") && (event.Floor == i)){
+			}else if (ELEV_get_button_signal(2,i) == 1) && !((buttonEvent.Button == "C") && (buttonEvent.Floor == i)){
 
-				event.Button = "C"
-                event.Floor = i
-                ButtonChan <- event
+				buttonEvent.Button = "C"
+                buttonEvent.Floor = i
+                ButtonChan <- buttonEvent
 				timer = time.Now()
 			}
         }
 
 		if (time.Since(timer) > 1000*time.Millisecond){
-			event.Button = ""
-			event.Floor = -1
+			buttonEvent.Button = ""
+			buttonEvent.Floor = -1
 		}
+
+		floor = ELEV_get_floor_sensor_signal()
+
+		if (floor != -1) && (currentFloor != floor){
+		    currentFloor = floor
+			ELEV_set_floor_indicator(floor)    
+		    floorEvent.Floor = floor
+		    floorEvent.Event = "NEW_FLOOR"
+		    ElevChan <- floorEvent
+	    }
+		time.Sleep(500*time.Microsecond)
     }
 }

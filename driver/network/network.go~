@@ -16,7 +16,7 @@ type Connection struct{
 }
 
 
-var NewMessage = make(chan *Message)
+var NewMessage = make(chan *Message, 200)
 
 
 var IP string
@@ -96,17 +96,19 @@ func whatToDo(m *Message){
 			Master = false
             MasterConn.IP = m.From
 		    MasterConn.LastSignal = time.Now()
-            for i := 0 ; i < len(Connected) ; i++ {
+
+            /*for i := 0 ; i < len(Connected) ; i++ {
                 if m.From == Connected[i].IP {
                     MasterConn.Conn = Connected[i].Conn
 					RemoveConn(i)
                 }
-            }
+            }*/
 		}
 
     }else if order == "as" {
 		//Alive signal from slave
 		found := false
+
         for i := 0 ; i < len(Connected) ; i++ {
             if m.From == Connected[i].IP {
                 Connected[i].LastSignal = time.Now()
@@ -135,6 +137,12 @@ func timeout(){
 		if (time.Since(MasterConn.LastSignal) > 900*time.Millisecond) && (Master == false){
 			//No master on the network
 			go WhosMaster()
+
+			//Remove messages waiting for acknowledgement from master
+			for i := 0 ; i < len(sentMessages) ; i++ {
+				removeMessage(i)
+			}
+
 			time.Sleep(500*time.Millisecond)
 		}
 
@@ -142,19 +150,30 @@ func timeout(){
 			if (time.Since(Connected[i].LastSignal) > 1200*time.Millisecond) {
 				//Slave timeout
                 println("Slave timeout: ", Connected[i].IP)
-				Connected[i].Conn.Close()
+				
+				//Connected[i].Conn.Close()
+
 				RemoveConn(i)
 
+
+				for i := 0 ; i < len(Connected) ; i++ {
+					println("Connected[",i,"] : ", Connected[i].IP)
+				}
+
 				if (Master) {
+					//println("MASTER")
 					//Tells ****-module to distribute backup-orders
 					var temp Message
 					temp.From = IP
 					temp.Message = "nm"
 					NewMessage <- &temp
+					//println("Exiting MASTER")
 				}
 			}
 		}
+		time.Sleep(50*time.Millisecond)
 	}
+	println("Exiting timeout()")
 }
 
 
@@ -163,6 +182,7 @@ func AppendConn(conn *net.UDPConn, ip string){
     temp.IP = ip
     temp.Conn = conn
     temp.LastSignal = time.Now()
+
     Connected = append(Connected, temp)
 }
 

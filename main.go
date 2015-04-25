@@ -1,16 +1,16 @@
 package main
 
 import (."./driver/heis/"
-	"runtime"
-	"./driver/event/"
-	"./driver/queue/"
-	"./driver/costfunc/"
-	"./driver/network/"
-	"./driver/phoenix/")
+		"runtime"
+		"./driver/event/"
+		"./driver/queue/"
+		"./driver/costfunc/"
+		"./driver/network/"
+		/*"./driver/phoenix/"*/)
 
 func main(){
 
-	phoenix.Phoenix()
+	//phoenix.Phoenix()
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -24,7 +24,7 @@ func main(){
 	queue.Q_init()
 	queue.ReadFile()
 
-    go FloorSensor()
+    //go FloorSensor()
 	go ButtonPush()
 
 	go elevlog.ButtonHandle()
@@ -33,7 +33,7 @@ func main(){
 	event.State = "IDLE"
 	go event.StateMachine()
 	go event.ReadTimer()
-	go event.ReadEvent()
+	//go event.ReadEvent()
 
 	//Initialize network
 	network.NETWORK_init()

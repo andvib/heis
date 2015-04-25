@@ -116,7 +116,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 	//FINDS THE CURRENT COST OF THE ORDER
 	//Checks if the queue is empty
-	if (ko.EmptyQ() == 1) {
+	if (queue.EmptyQ() == 1) {
 		cost = 1
 	}
 	

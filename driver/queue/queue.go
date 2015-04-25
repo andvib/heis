@@ -110,15 +110,17 @@ func EmptyQ()(int){
             return 0
         }
 	}
+	
     return 1
 }
 
 
 func NextInQ(dir string, floor int) (int) {
 	//Calculates which order to execute next, based on current direction and floor
+
 	switch dir {
 	case "U" :
-		for i := floor ; i < 4 ; i++ {
+		for i := floor+1; i < 4 ; i++ {
 			if (Q.UP[i] == 1) || (Q.CMD[i] == 1) {
 				return i
 			}

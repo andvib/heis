@@ -22,6 +22,7 @@ func StateMachine(){
 	
 		case "IDLE" :
 			if Event == "NEW_ORDER"{
+				println("NEWORDER")
 				//New order in empty queue
 				NextFloor = queue.NextInQ(Dir,Floor)
 
@@ -70,23 +71,31 @@ func StateMachine(){
 				Event = ""
 			}
 		}
+		time.Sleep(10*time.Millisecond)
 	}
 }
 
 
 func ReadTimer(){
+	var event driver.FloorEvent
+
 	//Reads timers for door and elevator moving to see if elevator is still operating
 	for {
-		if (time.Since(TimerMoving) > 10*time.Second) && (State == "MOVING"){
+		if (time.Since(TimerMoving) > 20*time.Second) && (State == "MOVING"){
 			println("Elevator not moving!")
 			network.Alive = false
-		}else if (time.Since(TimerDoor) > 10*time.Second) && (State == "DOOR_OPEN"){
+		}else if (time.Since(TimerDoor) > 20*time.Second) && (State == "DOOR_OPEN"){
 			println("Door stuck!")
 			network.Alive = false
 		}else{
 			network.Alive = true
 		}
-		time.Sleep(5*time.Second)
+
+		//Reads events put on the event channel by queue-module and elev-module
+		
+		event = <- driver.ElevChan
+		Event = event.Event
+		EventFloor = event.Floor
 	}
 }
 
@@ -130,6 +139,7 @@ func startUp() {
 
 	Dir = "U"
 	Floor = driver.ELEV_get_floor_sensor_signal()
+	println("STARTUP EXIT")
 }
 
 
