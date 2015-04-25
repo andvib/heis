@@ -1,12 +1,12 @@
 package event
 
-import(".././heis/"
+import(".././queue/"
 		"time"
 		".././ko/"
 		".././network/")
 
-var State string //IDLE, MOVING, DOOR_OPEN
-var Event string //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
+var State string    //IDLE, MOVING, DOOR_OPEN
+var Event string    //NEW_ORDER, ORDERED_FLOOR_REACHED, EMPTY_QUEUE
 var EventFloor int
 var Floor int
 var NextFloor int
@@ -22,27 +22,30 @@ func StateMachine(){
 	
 		case "IDLE" :
 			if Event == "NEW_ORDER"{
-				println("IDLE:NEW_ORDER")
+				//New order in empty queue
 				NextFloor = ko.NextInQ(Dir,Floor)
-				println(NextFloor)
+
 				if NextFloor == Floor {
 					TimerDoor = time.Now()
 					State = "DOOR_OPEN"
+
 				}else{
 					TimerMoving = time.Now()
 					State = "MOVING"
 					moveToFloor()
-				Event = ""
 				}
+				Event = ""
 			}
 
 		case "MOVING" :
 			if Event == "NEW_FLOOR" {
-				temp := driver.ELEV_get_floor_sensor_signal()	
+				temp := driver.ELEV_get_floor_sensor_signal()
+
 				if (temp != -1){
 					Floor = temp
 				}
 				if (temp == NextFloor){
+					//Ordered floor reached
 					driver.ELEV_set_motor_direction(0)
 					TimerDoor = time.Now()
 					State = "DOOR_OPEN"
@@ -72,6 +75,7 @@ func StateMachine(){
 
 
 func ReadTimer(){
+	//Reads timers for door and elevator moving to see if elevator is still operating
 	for {
 		if (time.Since(TimerMoving) > 10*time.Second) && (State == "MOVING"){
 			println("Elevator not moving!")
@@ -80,7 +84,6 @@ func ReadTimer(){
 			println("Door stuck!")
 			network.Alive = false
 		}else{
-			println("Alive")
 			network.Alive = true
 		}
 		time.Sleep(5*time.Second)
@@ -89,6 +92,7 @@ func ReadTimer(){
 
 
 func ReadEvent() {
+	//Reads events put on the event channel by queue-module and elev-module
 	var event driver.FloorEvent
 
 	for ; true ; {
@@ -100,6 +104,7 @@ func ReadEvent() {
 
 
 func moveToFloor() {
+	//Starts the elevator in the wanted direction
 	if (NextFloor == -1) {
 		return
 	}
@@ -114,12 +119,15 @@ func moveToFloor() {
 }
 
 func startUp() {
+	//Ensures that the elevator starts in a known state
 	println("STARTUP")
-	Dir = "U"
 	driver.ELEV_set_motor_direction(-1)
+
 	for ; driver.ELEV_get_floor_sensor_signal() == -1 ; {
 	}
+
 	driver.ELEV_set_motor_direction(0)
+	Dir = "U"
 	Floor = driver.ELEV_get_floor_sensor_signal()
 }
 
