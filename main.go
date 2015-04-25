@@ -5,9 +5,13 @@ import (."./driver/heis/"
 	"./driver/event/"
 	"./driver/queue/"
 	"./driver/costfunc/"
-	"./driver/network/")
+	"./driver/network/"
+	"./driver/phoenix/")
 
 func main(){
+
+	phoenix.Phoenix()
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	//Initialize elevator
@@ -33,7 +37,6 @@ func main(){
 
 	//Initialize network
 	network.NETWORK_init()
-
 
 	select {}
 }
