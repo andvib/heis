@@ -1,4 +1,4 @@
-package ko
+package queue
 
 import (.".././heis/"
 		".././network/"
@@ -25,7 +25,8 @@ func Q_init() {
 }
 
 
-func ButtonHandle(){
+//Function for handling buttonpushes when running strictly local
+/*func ButtonHandle(){
 	var buttonEvent ButtonEvent
 
 	for ; true ; {
@@ -33,8 +34,7 @@ func ButtonHandle(){
 		AddOrder(buttonEvent.Floor, buttonEvent.Button)
 		println("NY BESTILLING: ", buttonEvent.Floor, buttonEvent.Button)
 	}	
-
-}
+}*/
 
 
 func AddOrder(floor int, dir string) {
@@ -66,6 +66,7 @@ func AddOrder(floor int, dir string) {
 	}
 
     if (q == 1) {
+		//Sends new order in empty queue command
 		println("New order empty q")
         event.Event = "NEW_ORDER"
 		event.Floor = floor
@@ -75,6 +76,7 @@ func AddOrder(floor int, dir string) {
 
 
 func writeFile(){
+	//Writes internal orders to file
 	var orders bytes.Buffer
 	enc := gob.NewEncoder(&orders)
 	enc.Encode(Q.CMD)
@@ -84,6 +86,7 @@ func writeFile(){
 
 
 func ReadFile(){
+	//Reads internal orders from file
 	temp, _ := ioutil.ReadFile("internal")
 
 	buf := bytes.NewBuffer(temp)
@@ -100,8 +103,8 @@ func ReadFile(){
 }
 
 
-
 func EmptyQ()(int){
+	//Returns 1 if the queue is empty, 0 otherwise
 	for i := 0 ; i < 4; i++{
         if (Q.UP[i] == 1) || (Q.DOWN[i] == 1) || (Q.CMD[i] == 1){
             return 0
@@ -112,9 +115,9 @@ func EmptyQ()(int){
 
 
 func NextInQ(dir string, floor int) (int) {
+	//Calculates which order to execute next, based on current direction and floor
 	switch dir {
 	case "U" :
-		//println("NextInQ:UP")
 		for i := floor ; i < 4 ; i++ {
 			if (Q.UP[i] == 1) || (Q.CMD[i] == 1) {
 				return i
@@ -158,9 +161,11 @@ func RemoveOrder(floor int) {
 
 	writeFile()
 
+	//Sends message on the network that an order has been completed
 	mess := "rm" + strconv.Itoa(floor)
 
 	if (network.Master){
+		//If master it pushes the message to itself to update backup
 		var temp network.Message
 		temp.From = network.IP
 		temp.Message = mess
