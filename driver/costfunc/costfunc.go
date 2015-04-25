@@ -3,13 +3,13 @@ package elevlog
 import(.".././network"
 		".././heis/"
 		"strconv"
-		".././ko/"
+		".././queue/"
 		".././event/"
 		"time"
 		"net")
 
-var backup ko.Queue
-var qCopy ko.Queue
+var backup queue.Queue
+var qCopy queue.Queue
 var BestOrder OrderCost
 
 type OrderCost struct{
@@ -26,7 +26,7 @@ func ButtonHandle(){
 		buttonEvent = <- driver.ButtonChan
 		if (buttonEvent.Button == "C"){
 			//Internal order, added to local q
-			ko.AddOrder(buttonEvent.Floor,buttonEvent.Button)
+			queue.AddOrder(buttonEvent.Floor,buttonEvent.Button)
 
 		}else if Master {	
 			newOrderMaster(buttonEvent)
@@ -67,7 +67,7 @@ func newOrderMaster(order driver.ButtonEvent){
 
 	if Cost(order.Floor,order.Button) <= BestOrder.Cost{
 		println("Takes the order itself")
-		ko.AddOrder(order.Floor,order.Button)
+		queue.AddOrder(order.Floor,order.Button)
 	}else{
 		println("Sends execute order")
 		newOrder := "eo" + strconv.Itoa(order.Floor) + order.Button
@@ -96,7 +96,7 @@ func slaveCalculate(order driver.ButtonEvent){
 
 func Cost (orderedFloor int, orderedDir string) (int){
 	//Calculates cost for executing order
-	qCopy = ko.Q
+	qCopy = queue.Q
 	var ordersInQ []int
 	moreOrders := true
 	cost := 100
@@ -116,7 +116,7 @@ func Cost (orderedFloor int, orderedDir string) (int){
 
 	//FINDS THE CURRENT COST OF THE ORDER
 	//Checks if the queue is empty
-	if (ko.EmptyQ() == 1) {
+	if (queue.EmptyQ() == 1) {
 		cost = 1
 	}
 	

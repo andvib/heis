@@ -3,7 +3,7 @@ package main
 import (."./driver/heis/"
 	"runtime"
 	"./driver/event/"
-	"./driver/ko/"
+	"./driver/queue/"
 	"./driver/costfunc/"
 	"./driver/network/")
 
@@ -17,14 +17,14 @@ func main(){
 
 	ELEV_set_motor_direction(0)
 
-	ko.Q_init()
-	ko.ReadFile()
+	queue.Q_init()
+	queue.ReadFile()
 
     go FloorSensor()
 	go ButtonPush()
 
-	go costfunc.ButtonHandle()
-	go costfunc.ReceiveMessage()
+	go elevlog.ButtonHandle()
+	go elevlog.ReceiveMessage()
 
 	event.State = "IDLE"
 	go event.StateMachine()

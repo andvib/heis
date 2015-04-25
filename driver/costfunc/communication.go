@@ -2,7 +2,7 @@ package elevlog
 
 import(.".././network"
 		"strconv"
-		".././ko/"
+		".././queue/"
 		".././heis/")
 
 func ReceiveMessage(){
@@ -42,7 +42,7 @@ func ReceiveMessage(){
 		}else if (command == "eo"){
 			//Master tells one of the slaves to execute a certain order
 			floor, _ := strconv.Atoi(string(received.Message[2]))
-			ko.AddOrder(floor, string(received.Message[3]))
+			queue.AddOrder(floor, string(received.Message[3]))
 
 		}else if (command == "ba"){
 			//Master sends the backup to the slaves

@@ -2,7 +2,7 @@ package elevlog
 
 import(.".././network"
 		"strconv"
-		".././ko/"
+		".././queue/"
 		".././heis/")
 
 func ReceiveMessage(){

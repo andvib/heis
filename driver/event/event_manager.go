@@ -2,7 +2,7 @@ package event
 
 import(".././queue/"
 		"time"
-		".././ko/"
+		".././heis/"
 		".././network/")
 
 var State string    //IDLE, MOVING, DOOR_OPEN
@@ -17,13 +17,13 @@ var TimerDoor time.Time
 func StateMachine(){
 	startUp()
 	for ; true ; {
-		NextFloor = ko.NextInQ(Dir,Floor) 
+		NextFloor = queue.NextInQ(Dir,Floor) 
 		switch State {
 	
 		case "IDLE" :
 			if Event == "NEW_ORDER"{
 				//New order in empty queue
-				NextFloor = ko.NextInQ(Dir,Floor)
+				NextFloor = queue.NextInQ(Dir,Floor)
 
 				if NextFloor == Floor {
 					TimerDoor = time.Now()
@@ -57,8 +57,8 @@ func StateMachine(){
 				driver.ELEV_set_door_open_lamp(1)
 				time.Sleep(3000*time.Millisecond)
 				driver.ELEV_set_door_open_lamp(0)
-				ko.RemoveOrder(Floor)
-				NextFloor = ko.NextInQ(Dir,Floor)
+				queue.RemoveOrder(Floor)
+				NextFloor = queue.NextInQ(Dir,Floor)
 				println(NextFloor)
 			}			
 			if (NextFloor != -1){
