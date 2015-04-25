@@ -14,8 +14,6 @@ var BUTTON_CHANNEL = [4][3]int{{BUTTON_UP1, BUTTON_DOWN1, BUTTON_COMMAND1},
 const N_FLOORS = 4
 const N_BUTTONS = 3
 
-//var elev_motor_direction int;
-
 type elev_motor_direction int
 const (
 	DIRN_DOWN = -1
@@ -180,13 +178,3 @@ func ELEV_set_button_lamp(button elev_button_type, floor int, value int) {
 		IO_clear_bit(LAMP_CHANNEL[floor][button])
 	}
 }
-
-
-
-
-
-
-
-
-
-

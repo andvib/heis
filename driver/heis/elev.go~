@@ -180,30 +180,3 @@ func ELEV_set_button_lamp(button elev_button_type, floor int, value int) {
 		IO_clear_bit(LAMP_CHANNEL[floor][button])
 	}
 }
-
-/*
-func poll() {
-	
-	
-	for i:=0; i < N_FLOORS; i++ {
-		for j:=0; j < 2; j++{
-			BUTTON_CHANNEL[j][i] := elev_get_button_signal(j ,i)
-		}
-	}
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

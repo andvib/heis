@@ -15,7 +15,9 @@ type ButtonEvent struct{
 var ElevChan = make(chan FloorEvent,100)
 var ButtonChan = make(chan ButtonEvent)
 
+
 func FloorSensor(){
+	//Reads the floor-sensors and sends new-floor events to event manager
 	currentFloor := -1
 	var floor int
     var event FloorEvent
@@ -35,6 +37,8 @@ func FloorSensor(){
 
 
 func ButtonPush() {
+	//Reads when a button is pushed and sends the event to the elevlogic-module
+	//Uses a timer to avoid spamming the buttons
     var event ButtonEvent
 	
 	timer := time.Now()
