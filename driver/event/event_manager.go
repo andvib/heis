@@ -76,7 +76,7 @@ func StateMachine(){
 }
 
 
-func ReadTimer(){
+func ReadEvents(){
 	var event driver.FloorEvent
 
 	//Reads timers for door and elevator moving to see if elevator is still operating
@@ -96,18 +96,8 @@ func ReadTimer(){
 		event = <- driver.ElevChan
 		Event = event.Event
 		EventFloor = event.Floor
-	}
-}
 
-
-func ReadEvent() {
-	//Reads events put on the event channel by queue-module and elev-module
-	var event driver.FloorEvent
-
-	for ; true ; {
-		event = <- driver.ElevChan
-		Event = event.Event
-		EventFloor = event.Floor
+		time.Sleep(10*time.Millisecond)
 	}
 }
 

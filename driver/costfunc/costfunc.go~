@@ -205,9 +205,9 @@ func addToBackup(order driver.ButtonEvent){
 	switch order.Button {
 	case "U":
 		backup.UP[order.Floor] = 1
-	
+
 	case "D":
-		backup.DOWN[order.Floor] = 1
+		backup.DOWN[order.Floor] = 1		
 
 	case "C":
 		backup.CMD[order.Floor] = 1

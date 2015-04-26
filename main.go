@@ -6,11 +6,11 @@ import (."./driver/heis/"
 		"./driver/queue/"
 		"./driver/costfunc/"
 		"./driver/network/"
-		/*"./driver/phoenix/"*/)
+		"./driver/phoenix/")
 
 func main(){
 
-	//phoenix.Phoenix()
+	phoenix.Phoenix()
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -20,19 +20,19 @@ func main(){
 	}
 
 	ELEV_set_motor_direction(0)
-
+	
 	queue.Q_init()
 	queue.ReadFile()
 
     //go FloorSensor()
-	go ButtonPush()
+	go ReadSensors()
 
 	go elevlog.ButtonHandle()
 	go elevlog.ReceiveMessage()
 
 	event.State = "IDLE"
 	go event.StateMachine()
-	go event.ReadTimer()
+	go event.ReadEvents()
 	//go event.ReadEvent()
 
 	//Initialize network

@@ -42,7 +42,7 @@ func ReceiveMessage(){
 		}else if (command == "eo"){
 			//Master tells one of the slaves to execute a certain order
 			floor, _ := strconv.Atoi(string(received.Message[2]))
-			ko.AddOrder(floor, string(received.Message[3]))
+			queue.AddOrder(floor, string(received.Message[3]))
 
 		}else if (command == "ba"){
 			//Master sends the backup to the slaves
@@ -85,9 +85,11 @@ func receiveBackup(message string){
 		letter2, _ := strconv.Atoi(string(message[i+4]))
 		letter3, _ := strconv.Atoi(string(message[i+8]))
 
+		<- mut
 		backup.UP[i] = letter1
 		backup.DOWN[i] = letter2
 		backup.CMD[i] = letter3
+		mut <- 1
 	}
 }
 

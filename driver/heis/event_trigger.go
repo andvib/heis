@@ -16,27 +16,7 @@ var ElevChan = make(chan FloorEvent,100)
 var ButtonChan = make(chan ButtonEvent)
 
 
-/*func FloorSensor(){
-	//Reads the floor-sensors and sends new-floor events to event manager
-	currentFloor := -1
-	var floor int
-    var event FloorEvent
-
-	for ; true ; {
-		floor = ELEV_get_floor_sensor_signal()
-
-		if (floor != -1) && (currentFloor != floor){
-		    currentFloor = floor
-			ELEV_set_floor_indicator(floor)    
-		    event.Floor = floor
-		    event.Event = "NEW_FLOOR"
-		    ElevChan <- event
-	    }
-	}
-}*/ 
-
-
-func ButtonPush() {
+func ReadSensors() {
 	//Reads when a button is pushed and sends the event to the elevlogic-module
 	//Uses a timer to avoid spamming the buttons
     var buttonEvent ButtonEvent

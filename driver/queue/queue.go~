@@ -15,6 +15,8 @@ type Queue struct {
 
 var Q Queue
 
+var c = make(chan int, 1)
+
 
 func Q_init() {
 	for i := 0 ; i < 4 ; i++ {
@@ -120,7 +122,7 @@ func NextInQ(dir string, floor int) (int) {
 
 	switch dir {
 	case "U" :
-		for i := floor ; i < 4 ; i++ {
+		for i := floor+1; i < 4 ; i++ {
 			if (Q.UP[i] == 1) || (Q.CMD[i] == 1) {
 				return i
 			}

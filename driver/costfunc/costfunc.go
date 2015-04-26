@@ -62,7 +62,7 @@ func newOrderMaster(order driver.ButtonEvent){
 	//Waits to receive costs from slaves
 	timer := time.Now()
 	BestOrder.Cost = 1000
-	for ; (time.Since(timer) < 500*time.Millisecond) ; {}
+	for ; (time.Since(timer) < 1000*time.Millisecond) ; {}
 
 
 	if Cost(order.Floor,order.Button) <= BestOrder.Cost{
@@ -205,9 +205,9 @@ func addToBackup(order driver.ButtonEvent){
 	switch order.Button {
 	case "U":
 		backup.UP[order.Floor] = 1
-	
+
 	case "D":
-		backup.DOWN[order.Floor] = 1
+		backup.DOWN[order.Floor] = 1		
 
 	case "C":
 		backup.CMD[order.Floor] = 1

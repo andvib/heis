@@ -60,7 +60,7 @@ func NETWORK_init(){
 
 	Alive = true
 	go alive(conn)
-	go updateMessages()
+	//go updateMessages()
 }
 
 

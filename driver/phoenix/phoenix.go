@@ -20,7 +20,7 @@ func Phoenix(){
 
 
 func spawn(){
-	backup := exec.Command("gnome-terminal", "-x", "sh", "-c", "go run /home/andreanv/Documents/heis/main.go")
+	backup := exec.Command("gnome-terminal", "-x", "sh", "-c", "go run /home/haavardo/heis/main.go")
 	backup.Start()
 }
 
